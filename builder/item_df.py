@@ -1,27 +1,50 @@
+import pandas as pd
+import json
 
-def add_average_num_item_on_unit_df(df):
+def add_item_count_percent_on_df(item_df):
     """
-    Enrich the dataFrame with average number of item column
+    Enrich the dataFrame with item use count in percentage
     Argumnets:
-        df(dataFrame): result dataframe from 'build_unit_use_count_tier_item_df' function
+        item_df(dataFrame)
     Returns:
-        df(dataFrame): df enriched with Average_Num_Item column
+        item_df(dataFrame): item_df enriched with 'Count(%)' column
     """
-    def calculate_average_num_item(cnt, item_hash):
-        """
-        Calculate average of tier
-        Arguments:
-            item_dict(Dict)
-        Returns:
-            average_num_item(Float)
-        """
-        sum = 0
-        for val in item_hash.values():
-            sum += int(val)
+    total_item_cnt = sum(item_df['Count'])
+    item_df['Count(%)'] = item_df.apply(lambda row: (row.Count/total_item_cnt) * 100, axis=1)
 
-        return sum/cnt
-            
-    df['Average_Num_Item'] = df.apply(lambda row: calculate_average_num_item(row.Count, row.Item), axis=1)
-    return df
+    return item_df
 
-# sample_data_w_avg_item = add_average_num_item_on_unit_df(unit_use_count_tier_item_df)
+
+def build_item_df(item_in_unit_df):
+    """
+    Build a dataframe for item item usage analysis
+    Arguments:
+        item_in_unit_df(DataFrame): 'Item' Column in unit_df
+    Returns:
+        item_df(dataFrame): |name(String) | use_count(Int) | tiers(List) | items(List)|
+    """  
+
+    item_cnt = {}
+    for row in item_in_unit_df:
+        for item, cnt in row.items():
+            if item not in item_cnt.keys():
+                item_cnt[item] = cnt
+            else:
+                item_cnt[item] += cnt
+    
+    # Load item_id and item_name dict
+    with open('builder/config/set3/items.json') as f:
+        item_id_name = json.load(f)
+
+    # Add item name to df
+    for _id, cnt in item_cnt.items():
+        for item in item_id_name:
+            if str(item['id']) == str(_id):
+                item['count'] = cnt
+                break
+    
+    item_df = pd.DataFrame(item_id_name, columns=['id', 'name', 'count'])
+    item_df.columns = ['Id', 'Name', 'Count']
+    item_df = add_item_count_percent_on_df(item_df)
+    
+    return item_df

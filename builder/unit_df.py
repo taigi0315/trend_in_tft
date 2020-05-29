@@ -1,6 +1,7 @@
 import pandas as pd
 from collections import Counter
 
+
 def get_units_in_single_match(single_match_data):
     """
     Extract all unit data from single match data
@@ -9,7 +10,7 @@ def get_units_in_single_match(single_match_data):
     Returns:
         units(List): All units used in match
     """
-
+    
     players = single_match_data['match']['info']['participants']
     units = []
     for p in players:
@@ -85,13 +86,13 @@ def build_count_hashtable_from_list(lst):
     return table
 
 
-def add_average_tier_on_unit_df(df):
+def add_average_tier_on_unit_df(unit_df):
     """
     Enrich the dataFrame with average tier of units column
     Argumnets:
-        df(dataFrame): result dataframe from 'build_unit_use_count_tier_item_df' function
+        unit_df(dataFrame): result dataframe from 'build_unit_use_count_tier_item_df' function
     Returns:
-        df(dataFrame): df enriched with Average_Tier column
+        unit_df(dataFrame): unit_df enriched with Average_Tier column
     """
 
     def calculate_average_tier(cnt, tier_hash):
@@ -108,18 +109,18 @@ def add_average_tier_on_unit_df(df):
 
         return sum/cnt
             
-    df['Average_Tier'] = df.apply(lambda row: calculate_average_tier(row.Count, row.Tier), axis=1)
+    unit_df['Average_Tier'] = unit_df.apply(lambda row: calculate_average_tier(row.Count, row.Tier), axis=1)
     
-    return df
+    return unit_df
 
 
-def add_average_num_item_on_unit_df(df):
+def add_average_num_item_on_unit_df(unit_df):
     """
     Enrich the dataFrame with average number of item column
     Argumnets:
-        df(dataFrame): result dataframe from 'build_unit_use_count_tier_item_df' function
+        unit_df(dataFrame): result dataframe from 'build_unit_use_count_tier_item_df' function
     Returns:
-        df(dataFrame): df enriched with Average_Num_Item column
+        unit_df(dataFrame): unit_df enriched with Average_Num_Item column
     """
     def calculate_average_num_item(cnt, item_hash):
         """
@@ -135,22 +136,23 @@ def add_average_num_item_on_unit_df(df):
 
         return sum/cnt
             
-    df['Average_#_Item'] = df.apply(lambda row: calculate_average_num_item(row.Count, row.Item), axis=1)
-    return df
+    unit_df['Average_#_Item'] = unit_df.apply(lambda row: calculate_average_num_item(row.Count, row.Item), axis=1)
+    return unit_df
 
 
-def add_unit_avg_placement_on_df(df):
+def add_unit_count_percent_on_df(unit_df):
     """
-    Enrich the dataFrame with unit average placement
-    Average_Placement = Sum(unit placement) / Count
+    Enrich the dataFrame with unit use count in percentage
     Argumnets:
-        df(dataFrame): result dataframe from 'build_unit_use_count_tier_item_df' function
+        unit_df(dataFrame)
     Returns:
-        df(dataFrame): df enriched with Average_Placement column
+        unit_df(dataFrame): unit_df enriched with 'Count(%)' column
     """
 
-    total_unit_count = sum(df['Count'])
-    df['Count(%)'] = df.apply(lambda row: (row.Count/total_unit_count)*100, axis=1)
+    total_unit_count = sum(unit_df['Count'])
+    unit_df['Count(%)'] = unit_df.apply(lambda row: (row.Count/total_unit_count)*100, axis=1)
+    
+    return unit_df
 
 
 def convert_traits(player_traits):
@@ -170,27 +172,17 @@ def convert_traits(player_traits):
     return traits_list
 
 
-def build_unit_df(db, region='na1'):
+def build_unit_df(match_data):
     '''
-    Build dataframe for unit useage analysis
+    Build a dataframe for unit useage analysis
     Arguments:
-        db: Databse connection
-        region(String)
+        match_data(List): list of match data(Dict)
     Returns:
-        unit_use_count_tier_item_df(dataFrame): |name(String) | use_count(Int) | tiers(List) | items(List)|
+        unit_df(dataFrame): |name(String)|Count(Int)|tiers(List)|items(List)|Traits(Dict)|Average_Placement(Float)|Average_Tier(Float)|Average_#_Item(Float)|Count(%)(Float)|
     
     sample single unit data :
-    { 
-        'character_id': 'TFT3_Fiora',
-        'items': [59],
-        'name': '',
-        'rarity': 0,
-        'tier': 1
-    }
     '''
 
-    regx = "^" + region.upper()
-    match_data = list(db.collection.find( {'_id': {'$regex':regx} }))
     units_in_matches = get_units_in_multi_match(match_data)
     units_in_matches_hash = get_unit_hashtable(units_in_matches)
     
@@ -213,9 +205,9 @@ def build_unit_df(db, region='na1'):
             # Traits used with the champ
             champ_traits_list += convert_traits(unit['traits'])
             
-        champ_tiers = Counter(champ_tiers_list)
-        champ_traits = Counter(champ_traits_list)
-        champ_items = Counter(champ_items_list)
+        champ_tiers = dict(Counter(champ_tiers_list))
+        champ_traits = dict(Counter(champ_traits_list))
+        champ_items = dict(Counter(champ_items_list))
         average_placement = sum_champ_placement/len(list_of_units)
 
         unit_df_data.append([champ_name, len(list_of_units), champ_tiers, champ_traits, champ_items, average_placement])
@@ -224,5 +216,6 @@ def build_unit_df(db, region='na1'):
     unit_df = pd.DataFrame(unit_df_data, columns = ['Champion', 'Count', 'Tier', 'Traits', 'Item', 'Average_Placement']) 
     unit_df = add_average_tier_on_unit_df(unit_df)
     unit_df = add_average_num_item_on_unit_df(unit_df)
+    unit_df = add_unit_count_percent_on_df(unit_df)
 
     return unit_df
