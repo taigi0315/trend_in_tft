@@ -33,7 +33,7 @@ def build_items_df(item_in_unit_df):
                 item_cnt[item] += cnt
     
     # Load item_id and item_name dict
-    with open('builder/config/set3/items.json') as f:
+    with open('assets/set3/items.json') as f:
         item_id_name = json.load(f)
 
     # Add item name to df

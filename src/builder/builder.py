@@ -1,7 +1,7 @@
 from .items_df import build_items_df
 from .traits_df import build_traits_df
 from .units_df import build_units_df
-from .utils.helper import split_match_data_win_lose
+from .helper import split_match_data_win_lose
 
 class TFTDataBuilder:
     def __init__(self, db, region='na1'):

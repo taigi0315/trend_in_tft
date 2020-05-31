@@ -153,6 +153,15 @@ def convert_traits(player_traits):
     return traits_list
 
 
+def add_champion_image_on_df(units_df):
+    """
+    Add image file path to df
+    """
+    
+    units_df['Image'] = units_df.apply(lambda row: f"assets/set3/champions/{str(row.Champion[5:]).lower()}.png", axis=1)
+    return units_df
+
+
 def build_units_df(match_data):
     '''
     Build a dataframe for unit useage analysis
@@ -200,5 +209,6 @@ def build_units_df(match_data):
     units_df = add_average_tier_on_unit_df(units_df)
     units_df = add_average_num_item_on_unit_df(units_df)
     units_df = add_unit_count_percent_on_df(units_df)
-
+    units_df = add_champion_image_on_df(units_df)
+    
     return units_df
