@@ -113,7 +113,7 @@ def add_average_num_item_on_unit_df(unit_df):
         """
         sum = 0
         for val in item_hash.values():
-            sum += int(val)
+            sum += int(val['count'])
 
         return sum/cnt
             
@@ -187,30 +187,51 @@ def build_units_df(match_data):
     units_df_data = []
     for champ_name, list_of_unit in units_hash.items():
         tiers_list = []
-        items_list = []
+        item_hash = {}
         traits_list = []
         placement_list = []
         
+
         for unit in list_of_unit:
             # Champion tier
             tiers_list.append(unit['tier'])
             # Placements with the champ
             placement_list.append(unit['placement'])
+            
             # Items used with the champ
             if 99 in unit['items']:
-                items_list += [99] # 99: Thief's Gloves: generates 2 random item
-            else:
-                items_list += unit['items']
+                if 99 not in item_hash.keys():
+                    item_hash[99] = {
+                        'count': 1,
+                        'average_placement': unit['placement']
+                    }
+                else:
+                    item_hash[99]['count'] += 1
+                    item_hash[99]['average_placement'] += unit['placement']
+            else: 
+                # Unit can holds up to 3 items
+                for item in unit['items']:
+                    if item not in item_hash.keys():
+                        item_hash[item] = {
+                        'count': 1,
+                        'average_placement': unit['placement']
+                    }
+                    else:
+                        item_hash[item]['count'] += 1
+                        item_hash[item]['average_placement'] += unit['placement']
+            # Convert Sum(placement) to Avg(placement)
+            for item_data in item_hash.values():
+                item_data['average_placement'] = item_data['average_placement']/item_data['count']
+
             # Traits used with the champ
             traits_list += convert_traits(unit['traits'])
             
         champ_tiers = dict(Counter(tiers_list))
         champ_traits = dict(Counter(traits_list))
-        champ_items = dict(Counter(items_list))
         champ_placements = dict(Counter(placement_list))
         average_placement = sum(placement_list) / len(list_of_unit)
 
-        units_df_data.append([champ_name, len(list_of_unit), champ_tiers, champ_traits, champ_items, champ_placements, average_placement])
+        units_df_data.append([champ_name, len(list_of_unit), champ_tiers, champ_traits, item_hash, champ_placements, average_placement])
     
     
     units_df = pd.DataFrame(units_df_data, columns = ['Champion_Id', 'Count', 'Tier', 'Traits', 'Item', 'Placement_List', 'Average_Placement']) 

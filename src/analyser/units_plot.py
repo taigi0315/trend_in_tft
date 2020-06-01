@@ -10,6 +10,23 @@ from bokeh.transform import linear_cmap
 from .helper import get_count_axis_ticker
 from .theme import choi_theme
 
+
+def build_hover_tool():
+         # Add Tooltips
+        hover = HoverTool()
+        hover.tooltips = """
+        <div style="background-color:rgba(0,0,0,0.1);">
+                <div style="border-radius: 1px; background-color:rgba(0,0,0,0.1);">
+                        <img src=@images alt="" width="125" height="125">
+                </div>
+                <div><strong>Count: @counts</strong></div>
+                <div><strong>Avg_Tier: @tiers</strong></div>
+                <div><strong>Avg_Placement: @placements %</strong></div>
+        </div>
+        """
+
+        return hover
+
 def plot_units_df(units_df, title='Unit Usage'):
         output_file(f"experiments/plot/unit_plot/{title}_plot.html")
         # Set Theme
@@ -51,8 +68,8 @@ def plot_units_df(units_df, title='Unit Usage'):
         bar_color_mapper = linear_cmap("placements", color_palette, low=min(placements), high=max(placements))
         p.vbar(x='champions', top='counts', color=bar_color_mapper, width=0.6, source=source)
         
-        # Calculate Count ticker
-        p.yaxis.ticker = get_count_axis_ticker(max(counts))
+        # Calculate Count ticker * ticker seems not good
+        #p.yaxis.ticker = get_count_axis_ticker(max(counts))
         
         # Adding second y-axis for average tier
         p.extra_y_ranges = {"Tier": Range1d(start=1, end=3)}
@@ -62,7 +79,7 @@ def plot_units_df(units_df, title='Unit Usage'):
                 LinearAxis(
                         y_range_name="Tier",
                         axis_label="Tier",
-                        ticker=[1, 2, 3],
+                        ticker=[0, 1, 2, 3],
                         axis_label_text_color="#EDBE74",
                         axis_label_text_font_size="18pt",
                         major_label_text_font_size="8pt"
@@ -77,19 +94,8 @@ def plot_units_df(units_df, title='Unit Usage'):
         color_bar = ColorBar(color_mapper=tier_mapper['transform'], width=15,  location=(0,0), ticker=ticker)
         p.add_layout(color_bar, 'right')
         
-        # Add Tooltips
-        hover = HoverTool()
-        hover.tooltips = """
-        <div style="background-color:rgba(0,0,0,0.1);">
-                <div style="border-radius: 1px; background-color:rgba(0,0,0,0.1);">
-                        <img src=@images alt="" width="125" height="125">
-                </div>
-                <div><strong>Count: @counts</strong></div>
-                <div><strong>Avg_Tier: @tiers</strong></div>
-                <div><strong>Avg_Placement: @placements</strong></div>
-        </div>
-        """
-        p.add_tools(hover)
+        # Add hover tool div
+        p.add_tools(build_hover_tool())
         
         # Axis design setting
         p.xaxis.major_label_orientation = math.pi/3
