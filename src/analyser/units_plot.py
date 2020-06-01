@@ -11,7 +11,7 @@ from .helper import get_count_axis_ticker
 from .theme import choi_theme
 
 
-def build_hover_tool():
+def hover_tool():
          # Add Tooltips
         hover = HoverTool()
         hover.tooltips = """
@@ -50,62 +50,61 @@ def plot_units_df(units_df, title='Unit Usage'):
         plot_height = 750
         plot_width = int(plot_height * 1.61)   
         
-        p = figure(x_range=champions, y_range=(0, max(counts)+10), plot_height=plot_height,
-                plot_width=plot_width, title=title, toolbar_location=None, 
+        fig = figure(x_range=champions, y_range=(0, max(counts)+10), title=title, toolbar_location=None, 
                 tools="", y_axis_label='Count')
-
-        # Adding background image to plot
-        logo_image_path = "../../../assets/image/tft_logo_2.png"
-        logo_image_height = plot_height * 0.18
-        logo_image_width = plot_width * 0.18
-        background_image = Div(
-            text = f'<div style="position: relative; right:{plot_width*0.5 + logo_image_width}px; top:{plot_height*0.06}px">\
-            <img src={logo_image_path} style="width:{logo_image_width}; height:{logo_image_height}px; opacity: 0.7">\
-            </div>')
-
-        # Set color palette on bar color
-        color_palette = ["#bf3440","#e69978","#f7c67d","#998c8c","#5c5151"]
-        bar_color_mapper = linear_cmap("placements", color_palette, low=min(placements), high=max(placements))
-        p.vbar(x='champions', top='counts', color=bar_color_mapper, width=0.6, source=source)
         
-        # Calculate Count ticker * ticker seems not good
-        #p.yaxis.ticker = get_count_axis_ticker(max(counts))
-        
-        # Adding second y-axis for average tier
-        p.extra_y_ranges = {"Tier": Range1d(start=1, end=3)}
-        
-        # Adding second axis for Scatter Plot(average tier)
-        p.add_layout(
+        # Adding second axis for Scatter Plot(Champion_Name | Average_Tier)
+        fig.add_layout(
                 LinearAxis(
                         y_range_name="Tier",
                         axis_label="Tier",
                         ticker=[0, 1, 2, 3],
-                        axis_label_text_color="#EDBE74",
-                        axis_label_text_font_size="18pt",
-                        major_label_text_font_size="8pt"
                 ), "right"
         )
-        p.scatter(champions, tiers, y_range_name="Tier", marker="hex",
-                color='#9e6c36', size=12, line_color='#ff5a00', line_width=2.5, fill_alpha=0.5, line_alpha=0.7)
 
-        # Adding ColorBar(average placement)
-        tier_mapper = linear_cmap(field_name='Average_Placement', palette=color_palette ,low=0 ,high=5)
-        ticker = FixedTicker(ticks=[0,1,2,3,4,5])
-        color_bar = ColorBar(color_mapper=tier_mapper['transform'], width=15,  location=(0,0), ticker=ticker)
-        p.add_layout(color_bar, 'right')
+        # Set color palette on bar color
+        # bar_color_palette = ["#bf3440","#e69978","#f7c67d","#998c8c","#5c5151"]
+        bar_color_palette = ['#FE3D3D', "#f7c67d", "#998c8c"]
+        # Adding ColorBar(Champion_Name | Average_Placement)
+        tier_mapper = linear_cmap(field_name='Average_Placement', palette=bar_color_palette ,low=0 ,high=5)
+        fig.add_layout(
+                ColorBar(
+                        color_mapper=tier_mapper['transform'],
+                        width=10,
+                        location=(0,0),
+                        ticker=FixedTicker(ticks=[0,1,2,3])
+                ), 'right')
         
+        # Plot bar chart(Champion_Name | Count)
+        bar_color_mapper = linear_cmap("placements", bar_color_palette, low=min(placements), high=max(placements))
+        fig.vbar(x='champions', top='counts', color=bar_color_mapper, width=0.77, source=source)
+
+        # # Adding second y-axis for average tier
+        fig.extra_y_ranges = {"Tier": Range1d(start=0.5, end=3.5)}
+        fig.hex(champions, tiers, y_range_name="Tier", color='#FE3D3D', size=((tiers*3)**1.5).tolist(),
+                line_color="#F9C35C", line_width=3, fill_alpha=0.85, line_alpha=0.85)
+       
         # Add hover tool div
-        p.add_tools(build_hover_tool())
+        fig.add_tools(hover_tool())
         
         # Axis design setting
-        p.xaxis.major_label_orientation = math.pi/3
+        fig.xaxis.major_label_orientation = math.pi/3
         
         # Plot grid setting
-        p.xgrid.visible = False
-        p.ygrid.visible = True
-        p.ygrid.grid_line_color = "#EABB74"
-        p.ygrid.grid_line_width = 3
-        p.ygrid.grid_line_alpha = 0.2
-
+        fig.xgrid.visible = False
+        fig.ygrid.visible = True
+        fig.ygrid.grid_line_color = "#EABB74"
+        fig.ygrid.grid_line_width = 3
+        fig.ygrid.grid_line_alpha = 0.2
+        
+        # Adding background image to plot
+        logo_image_path = "../../../assets/image/tft_logo.png"
+        logo_image_height = plot_height * 0.18
+        logo_image_width = plot_width * 0.18
+        background_image = Div(
+            text = f'<div style="position: relative; right:{plot_width*0.5 + logo_image_width}px; top:{plot_height*0.06}px; z-index:100;">\
+            <img src={logo_image_path} style="width:{logo_image_width}; height:{logo_image_height}px; opacity: 0.6">\
+            </div>')
+        
         # Save plot
-        save(Row(p, background_image))
+        save(Row(fig, background_image))

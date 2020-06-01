@@ -4,7 +4,9 @@ choi_theme = Theme(
         "attrs" : {
             "Figure" : {
                 "background_fill_color": "#AEB6C1",
-                "background_fill_alpha": 0.35
+                "background_fill_alpha": 0.2,
+                "plot_height": 750,
+                "plot_width": 1230
             },
             "Axis": {
                 "major_label_text_font_size": "8pt",

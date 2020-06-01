@@ -6,10 +6,10 @@ from analyser.analyser import TFTDataAnalyser
 
 def get_match_data_from_db(db, region='na1'):
     regx = "^" + region.upper()
-    match_data = list(db.collection.find( {'_id': {'$regex':regx} }))
-    match_data = match_data[:10]
-    # test_data_ids = ["NA1_3436887139", "NA1_3436855922"]
-    # match_data = list(self.db.collection.find({'_id': {'$in': test_data_ids }}))
+    # match_data = list(db.collection.find( {'_id': {'$regex':regx} }))
+    # match_data = match_data[:10]
+    test_data_ids = ["NA1_3436887139", "NA1_3436855922"]
+    match_data = list(db.collection.find({'_id': {'$in': test_data_ids }}))
     return match_data
 
 if __name__ == "__main__":
