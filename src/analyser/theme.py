@@ -1,5 +1,5 @@
 from bokeh.themes.theme import Theme
-choi_theme = Theme(
+units_fig_theme = Theme(
     json={
         "attrs" : {
             "Figure" : {
@@ -9,8 +9,9 @@ choi_theme = Theme(
                 "plot_width": 1230
             },
             "Axis": {
-                "major_label_text_font_size": "8pt",
-                "axis_label_text_font_size" : "20pt",
+                "major_label_text_font_size": "15pt",
+                "major_label_text_font_style": 'bold',
+                "axis_label_text_font_size" : "30pt",
                 "axis_label_text_color": "#EDBE74",
                 "axis_line_color": "#3A3042",
                 "axis_line_width": 3.3,

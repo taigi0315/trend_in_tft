@@ -25,12 +25,12 @@ if __name__ == "__main__":
     print(f"match_data length: {len(DataBuilder.match_data)}")
     
     DataBuilder.units_df.to_csv('experiments/dataframe/units_df.csv')
-    DataBuilder.items_df.to_csv('experiments/dataframe/items_df.csv')
+    #DataBuilder.items_df.to_csv('experiments/dataframe/items_df.csv')
     #DataBuilder.traits_df.to_csv('experiments/dataframe/traits_df.csv')
 
     TFTDataAnalyser = TFTDataAnalyser(db)
     #FIx this to read from file
-    TFTDataAnalyser.plot_all_units_graph(units_df=DataBuilder.units_df)
+    TFTDataAnalyser.plot_all_units(units_df=DataBuilder.units_df)
   
   
 # Get list of name for each cost and save it under set3 
