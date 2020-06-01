@@ -8,6 +8,8 @@ if __name__ == "__main__":
     db_client = MongoClient('localhost', 27017)
     db = db_client['match_data']
 
+    #Collector collects the data 
+
     DataBuilder = TFTDataBuilder(db)
 
     DataBuilder.get_match_data_from_db()
@@ -21,7 +23,7 @@ if __name__ == "__main__":
     #DataBuilder.traits_df.to_csv('experiments/dataframe/traits_df.csv')
 
     TFTDataAnalyser = TFTDataAnalyser(db)
-    TFTDataAnalyser.plot_units_df(units_df=DataBuilder.units_df)
+    TFTDataAnalyser.plot_all_units_graph(units_df=DataBuilder.units_df)
   
   
 # Get list of name for each cost and save it under set3 

@@ -1,0 +1,86 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    
+      <meta charset="utf-8">
+      <title>Bokeh Plot</title>
+      
+      
+        
+          
+        
+        
+          
+        <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.0.2.min.js" integrity="sha384-ufR9RFnRs6lniiaFvtJziE0YeidtAgBRH6ux2oUItHw5WTvE1zuk9uzhUU/FJXDp" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.0.2.min.js" integrity="sha384-8QM/PGWBT+IssZuRcDcjzwIh1mkOmJSoNMmyYDZbCfXJg3Ap1lEvdVgFuSAwhb/J" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            Bokeh.set_log_level("info");
+        </script>
+        
+      
+      
+    
+  </head>
+  
+  
+  <body>
+    
+      
+        
+          
+          
+            
+              <div class="bk-root" id="b96d1690-8be6-46f9-a3d8-4619a33bb971" data-root-id="1669"></div>
+            
+          
+        
+      
+      
+        <script type="application/json" id="1780">
+          {"528396a3-0470-43bb-9f18-02e43fd0cfdd":{"roots":{"references":[{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#9e6c36"},"line_alpha":{"value":0.1},"line_color":{"value":"#ff5a00"},"line_width":{"value":2.5},"marker":{"value":"hex"},"size":{"units":"screen","value":12},"x":{"field":"x"},"y":{"field":"y"}},"id":"1660","type":"Scatter"},{"attributes":{"data_source":{"id":"1658"},"glyph":{"id":"1659"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1660"},"selection_glyph":null,"view":{"id":"1662"},"y_range_name":"Tier"},"id":"1661","type":"GlyphRenderer"},{"attributes":{},"id":"1638","type":"CategoricalTicker"},{"attributes":{},"id":"1679","type":"Selection"},{"attributes":{"high":5,"low":0,"palette":["#bf3440","#e69978","#f7c67d","#998c8c","#5c5151"]},"id":"1663","type":"LinearColorMapper"},{"attributes":{"source":{"id":"1658"}},"id":"1662","type":"CDSView"},{"attributes":{"axis_label":"Count","axis_label_text_color":"#EDBE74","axis_label_text_font_size":"20pt","axis_line_alpha":0.7,"axis_line_color":"#3A3042","axis_line_width":3.3,"formatter":{"id":"1671"},"major_label_text_font_size":"8pt","ticker":{"id":"1652"}},"id":"1640","type":"LinearAxis"},{"attributes":{"ticks":[0,1,2,3,4,5]},"id":"1664","type":"FixedTicker"},{"attributes":{},"id":"1672","type":"CategoricalTickFormatter"},{"attributes":{"end":3,"start":1},"id":"1654","type":"Range1d"},{"attributes":{"children":[{"id":"1626"},{"id":"1645"}]},"id":"1669","type":"Row"},{"attributes":{"color_mapper":{"id":"1663"},"formatter":{"id":"1675"},"location":[0,0],"ticker":{"id":"1664"},"width":15},"id":"1665","type":"ColorBar"},{"attributes":{"factors":["Kayle","WuKong","Irelia","Jinx","ChoGath","Fizz","VelKoz","Jhin","Soraka"]},"id":"1629","type":"FactorRange"},{"attributes":{"ticks":[0,60,120,180,240,300]},"id":"1652","type":"FixedTicker"},{"attributes":{"fill_color":{"field":"placements","transform":{"id":"1646"}},"line_color":{"field":"placements","transform":{"id":"1646"}},"top":{"field":"counts"},"width":{"value":0.6},"x":{"field":"champions"}},"id":"1648","type":"VBar"},{"attributes":{"callback":null,"tooltips":"\n        &lt;div style=\"background-color:rgba(0,0,0,0.1);\"&gt;\n                &lt;div style=\"border-radius: 1px; background-color:rgba(0,0,0,0.1);\"&gt;\n                        &lt;img src=@images alt=\"\" width=\"125\" height=\"125\"&gt;\n                &lt;/div&gt;\n                &lt;div&gt;&lt;strong&gt;Count: @counts&lt;/strong&gt;&lt;/div&gt;\n                &lt;div&gt;&lt;strong&gt;Avg_Tier: @tiers&lt;/strong&gt;&lt;/div&gt;\n                &lt;div&gt;&lt;strong&gt;Avg_Placement: @placements&lt;/strong&gt;&lt;/div&gt;\n        &lt;/div&gt;\n        "},"id":"1667","type":"HoverTool"},{"attributes":{},"id":"1635","type":"LinearScale"},{"attributes":{"text":"&lt;div style=\"position: relative; right:820.76px; top:45.0px\"&gt;            &lt;img src=../../../assets/image/tft_logo_2.png style=\"width:217.26; height:135.0px; opacity: 0.7\"&gt;            &lt;/div&gt;"},"id":"1645","type":"Div"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"field":"placements","transform":{"id":"1646"}},"line_alpha":{"value":0.1},"line_color":{"field":"placements","transform":{"id":"1646"}},"top":{"field":"counts"},"width":{"value":0.6},"x":{"field":"champions"}},"id":"1649","type":"VBar"},{"attributes":{"axis":{"id":"1640"},"dimension":1,"grid_line_alpha":0.2,"grid_line_color":"#EABB74","grid_line_width":3,"ticker":null},"id":"1643","type":"Grid"},{"attributes":{"data_source":{"id":"1625"},"glyph":{"id":"1648"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1649"},"selection_glyph":null,"view":{"id":"1651"}},"id":"1650","type":"GlyphRenderer"},{"attributes":{},"id":"1633","type":"CategoricalScale"},{"attributes":{},"id":"1671","type":"BasicTickFormatter"},{"attributes":{"fill_alpha":{"value":0.5},"fill_color":{"value":"#9e6c36"},"line_alpha":{"value":0.7},"line_color":{"value":"#ff5a00"},"line_width":{"value":2.5},"marker":{"value":"hex"},"size":{"units":"screen","value":12},"x":{"field":"x"},"y":{"field":"y"}},"id":"1659","type":"Scatter"},{"attributes":{"active_drag":"auto","active_inspect":"auto","active_multi":null,"active_scroll":"auto","active_tap":"auto","tools":[{"id":"1667"}]},"id":"1644","type":"Toolbar"},{"attributes":{"axis":{"id":"1637"},"ticker":null,"visible":false},"id":"1639","type":"Grid"},{"attributes":{},"id":"1674","type":"BasicTickFormatter"},{"attributes":{"high":4.635135135135135,"low":3.5779816513761467,"palette":["#bf3440","#e69978","#f7c67d","#998c8c","#5c5151"]},"id":"1646","type":"LinearColorMapper"},{"attributes":{"source":{"id":"1625"}},"id":"1651","type":"CDSView"},{"attributes":{"ticks":[1,2,3]},"id":"1656","type":"FixedTicker"},{"attributes":{"data":{"champions":["Kayle","WuKong","Irelia","Jinx","ChoGath","Fizz","VelKoz","Jhin","Soraka"],"counts":[296,286,286,222,219,144,125,112,109],"images":["../../../assets/set3/champions/kayle.png","../../../assets/set3/champions/wukong.png","../../../assets/set3/champions/irelia.png","../../../assets/set3/champions/jinx.png","../../../assets/set3/champions/chogath.png","../../../assets/set3/champions/fizz.png","../../../assets/set3/champions/velkoz.png","../../../assets/set3/champions/jhin.png","../../../assets/set3/champions/soraka.png"],"placements":{"__ndarray__":"fdYNpshnEkCGexXMknISQCRUn2lr/BFApshn3WCKEkAW11hcY3ERQFVVVVVV1RBACKwcWmQ7D0C3bdu2bdsRQPvJEti0nwxA","dtype":"float64","shape":[9]},"tiers":{"__ndarray__":"inzWDabI/T/RRRdddNH9P0vKAZHhXv0/emVsv6NX/j9F3xN9T/T9PxzHcRzHcf4/YOXQItv5/j9u27Zt27b/P/DCQfT4Lvw/","dtype":"float64","shape":[9]}},"selected":{"id":"1677"},"selection_policy":{"id":"1676"}},"id":"1625","type":"ColumnDataSource"},{"attributes":{"text":"cost_4_champions","text_color":{"value":"#feffe1"},"text_font":"times","text_font_style":"italic"},"id":"1627","type":"Title"},{"attributes":{"data":{"x":["Kayle","WuKong","Irelia","Jinx","ChoGath","Fizz","VelKoz","Jhin","Soraka"],"y":{"__ndarray__":"inzWDabI/T/RRRdddNH9P0vKAZHhXv0/emVsv6NX/j9F3xN9T/T9PxzHcRzHcf4/YOXQItv5/j9u27Zt27b/P/DCQfT4Lvw/","dtype":"float64","shape":[9]}},"selected":{"id":"1679"},"selection_policy":{"id":"1678"}},"id":"1658","type":"ColumnDataSource"},{"attributes":{},"id":"1677","type":"Selection"},{"attributes":{"end":306},"id":"1631","type":"Range1d"},{"attributes":{},"id":"1675","type":"BasicTickFormatter"},{"attributes":{"axis_label_text_color":"#EDBE74","axis_label_text_font_size":"20pt","axis_line_alpha":0.7,"axis_line_color":"#3A3042","axis_line_width":3.3,"formatter":{"id":"1672"},"major_label_orientation":1.0471975511965976,"major_label_text_font_size":"8pt","ticker":{"id":"1638"}},"id":"1637","type":"CategoricalAxis"},{"attributes":{"background_fill_alpha":0.35,"background_fill_color":"#AEB6C1","below":[{"id":"1637"}],"center":[{"id":"1639"},{"id":"1643"}],"extra_y_ranges":{"Tier":{"id":"1654"}},"left":[{"id":"1640"}],"plot_height":750,"plot_width":1207,"renderers":[{"id":"1650"},{"id":"1661"}],"right":[{"id":"1655"},{"id":"1665"}],"title":{"id":"1627"},"toolbar":{"id":"1644"},"toolbar_location":null,"x_range":{"id":"1629"},"x_scale":{"id":"1633"},"y_range":{"id":"1631"},"y_scale":{"id":"1635"}},"id":"1626","subtype":"Figure","type":"Plot"},{"attributes":{"axis_label":"Tier","axis_label_text_color":"#EDBE74","axis_label_text_font_size":"18pt","axis_line_alpha":0.7,"axis_line_color":"#3A3042","axis_line_width":3.3,"formatter":{"id":"1674"},"major_label_text_font_size":"8pt","ticker":{"id":"1656"},"y_range_name":"Tier"},"id":"1655","type":"LinearAxis"},{"attributes":{},"id":"1678","type":"UnionRenderers"},{"attributes":{},"id":"1676","type":"UnionRenderers"}],"root_ids":["1669"]},"title":"Bokeh Application","version":"2.0.2"}}
+        </script>
+        <script type="text/javascript">
+          (function() {
+            var fn = function() {
+              Bokeh.safely(function() {
+                (function(root) {
+                  function embed_document(root) {
+                    
+                  var docs_json = document.getElementById('1780').textContent;
+                  var render_items = [{"docid":"528396a3-0470-43bb-9f18-02e43fd0cfdd","root_ids":["1669"],"roots":{"1669":"b96d1690-8be6-46f9-a3d8-4619a33bb971"}}];
+                  root.Bokeh.embed.embed_items(docs_json, render_items);
+                
+                  }
+                  if (root.Bokeh !== undefined) {
+                    embed_document(root);
+                  } else {
+                    var attempts = 0;
+                    var timer = setInterval(function(root) {
+                      if (root.Bokeh !== undefined) {
+                        clearInterval(timer);
+                        embed_document(root);
+                      } else {
+                        attempts++;
+                        if (attempts > 100) {
+                          clearInterval(timer);
+                          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                        }
+                      }
+                    }, 10, root)
+                  }
+                })(window);
+              });
+            };
+            if (document.readyState != "loading") fn();
+            else document.addEventListener("DOMContentLoaded", fn);
+          })();
+        </script>
+    
+  </body>
+  
+</html>

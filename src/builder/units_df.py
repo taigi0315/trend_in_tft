@@ -158,7 +158,15 @@ def add_champion_image_on_df(units_df):
     Add image file path to df
     """
     
-    units_df['Image'] = units_df.apply(lambda row: f"assets/set3/champions/{str(row.Champion[5:]).lower()}.png", axis=1)
+    units_df['Image'] = units_df.apply(lambda row: f"../../../assets/set3/champions/{str(row.Champion_Name).lower()}.png", axis=1)
+    return units_df
+
+
+def convert_champion_id_to_name(units_df):
+    """
+    Enrich the units_df with champion name
+    """
+    units_df['Champion_Name'] = units_df.apply(lambda row: str(row.Champion_Id[5:]), axis=1)
     return units_df
 
 
@@ -205,10 +213,11 @@ def build_units_df(match_data):
         units_df_data.append([champ_name, len(list_of_unit), champ_tiers, champ_traits, champ_items, champ_placements, average_placement])
     
     
-    units_df = pd.DataFrame(units_df_data, columns = ['Champion', 'Count', 'Tier', 'Traits', 'Item', 'Placement_List', 'Average_Placement']) 
+    units_df = pd.DataFrame(units_df_data, columns = ['Champion_Id', 'Count', 'Tier', 'Traits', 'Item', 'Placement_List', 'Average_Placement']) 
     units_df = add_average_tier_on_unit_df(units_df)
     units_df = add_average_num_item_on_unit_df(units_df)
     units_df = add_unit_count_percent_on_df(units_df)
+    unit_df = convert_champion_id_to_name(units_df)
     units_df = add_champion_image_on_df(units_df)
-    
+
     return units_df

@@ -146,10 +146,10 @@ class TFTMatchDataCollector:
 if __name__ == "__main__":
     db_client = MongoClient('localhost', 27017)
     db = db_client['match_data']
-
-    MatchDataCollector = TFTMatchDataCollector(db)
+    token = "RGAPI-c991a41a-798b-4a06-9a5e-13fdf5c13391"
+    MatchDataCollector = TFTMatchDataCollector(db, token)
     MatchDataCollector.get_n_matches(
         region='na1',
         tier='challenger',
-        count=1
+        count=100
     )
