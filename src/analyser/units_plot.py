@@ -8,7 +8,7 @@ from bokeh.plotting import figure
 from bokeh.transform import linear_cmap
 
 from .helper import get_count_axis_ticker
-from .theme import units_fig_theme
+
 
 
 def hover_tool():
@@ -29,12 +29,13 @@ def hover_tool():
 
         return hover
 
-def build_basic_units_plot(units_df, title=None):
+def build_basic_units_plot(units_df, title=None, theme=None):
         """
         Plot units figure
         """
         # Set Theme
-        curdoc().theme = units_fig_theme
+        if theme:
+                curdoc().theme = theme
         
         sorted_units_df = units_df.sort_values(by=['Count'], ascending=False)
         Champion_Name = sorted_units_df['Champion_Name'].tolist()
@@ -140,7 +141,7 @@ def build_basic_units_plot(units_df, title=None):
         
         # Adding background image to plot
         logo_image_path = "../../../assets/image/tft_logo.png"
-        plot_width = 1000
+        plot_width = fig.plot_width
         plot_height= plot_width * 1.61
         logo_image_height = plot_width*0.16
         logo_image_width = plot_height*0.16
@@ -152,8 +153,16 @@ def build_basic_units_plot(units_df, title=None):
         return fig, background_image
 
 
-def build_win_lose_units_plot(win_units_df, lose_units_df):
-        win_fig, background_image = build_basic_units_plot(win_units_df, "Winner")
-        lose_fig, background_image = build_basic_units_plot(lose_units_df, "Loser")
+def build_win_lose_units_plot(win_units_df, lose_units_df, theme=None):
+        win_fig, background_image = build_basic_units_plot(
+                units_df=win_units_df,
+                title="Winner",
+                theme=theme
+        )
+        lose_fig, background_image = build_basic_units_plot(
+                units_df=lose_units_df,
+                title="Loser",
+                theme=theme
+        )
 
         return [win_fig, lose_fig, background_image]

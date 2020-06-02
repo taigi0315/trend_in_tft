@@ -5,6 +5,7 @@ from bokeh.io import save, output_file
 from bokeh.models.widgets import Panel, Tabs
 from bokeh.layouts import gridplot
 from bokeh.models import Row
+from .theme import units_fig_theme, win_lose_units_fig_theme
 
 class TFTDataAnalyser:
     def __init__(self, db, region='na'):
@@ -22,7 +23,7 @@ class TFTDataAnalyser:
         units_df_by_cost = split_units_df_by_cost(set_name='set3', units_df=units_df)
         for key, df_data in units_df_by_cost.items():
             cost_unit_df = pd.DataFrame(df_data, columns = units_df.columns)
-            fig, background_image = build_basic_units_plot(cost_unit_df) 
+            fig, background_image = build_basic_units_plot(cost_unit_df, theme=units_fig_theme) 
             panels += [Panel(child=Row(fig, background_image), title=key)]
 
         tabs = Tabs(tabs=panels)
@@ -42,7 +43,7 @@ class TFTDataAnalyser:
         
         for key, df_data in win_units_df_by_cost.items():
             cost_unit_df = pd.DataFrame(df_data, columns = win_units_df.columns)
-            fig, background_image = build_basic_units_plot(cost_unit_df) 
+            fig, background_image = build_basic_units_plot(cost_unit_df, theme=win_lose_units_fig_theme) 
             win_panels += [Panel(child=Row(fig, background_image), title=key)]
         
         win_tabs = Tabs(tabs=win_panels)
@@ -54,18 +55,12 @@ class TFTDataAnalyser:
         
         for key, df_data in lose_units_df_by_cost.items():
             cost_unit_df = pd.DataFrame(df_data, columns = lose_units_df.columns)
-            fig, background_image = build_basic_units_plot(cost_unit_df) 
+            fig, background_image = build_basic_units_plot(cost_unit_df, theme=win_lose_units_fig_theme) 
             lose_panels += [Panel(child=Row(fig, background_image), title=key)]
         
         los_tabs = Tabs(tabs=lose_panels)
         
+        win_tabs.active = los_tabs.active
         res = gridplot([[win_tabs, los_tabs]])
-        save(res)
-
-
         
-
-
-
         save(res)
-
