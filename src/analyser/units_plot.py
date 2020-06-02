@@ -29,7 +29,7 @@ def hover_tool():
 
         return hover
 
-def build_units_plot(units_df):
+def build_basic_units_plot(units_df, title=None):
         """
         Plot units figure
         """
@@ -60,7 +60,9 @@ def build_units_plot(units_df):
                 tools="",
                 y_axis_label='Count'
         )
-        
+        if title:
+                fig.title.text = title
+
         # Add hover tool div
         fig.add_tools(hover_tool())
 
@@ -147,4 +149,11 @@ def build_units_plot(units_df):
             <img src={logo_image_path} style="width:{logo_image_width}; height:{logo_image_height}px; opacity: 0.70">\
             </div>')
 
-        return Row(fig, background_image)
+        return fig, background_image
+
+
+def build_win_lose_units_plot(win_units_df, lose_units_df):
+        win_fig, background_image = build_basic_units_plot(win_units_df, "Winner")
+        lose_fig, background_image = build_basic_units_plot(lose_units_df, "Loser")
+
+        return [win_fig, lose_fig, background_image]
