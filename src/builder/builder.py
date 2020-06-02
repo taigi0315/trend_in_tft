@@ -4,14 +4,19 @@ from .units_df import build_units_df
 from .helper import split_match_data_win_lose
 
 class TFTDataBuilder:
-    def __init__(self, region='na1', match_data=None):
+    def __init__(self, start_date, end_date, region='na1', match_data=None):
         self.region=region
         self.match_data = match_data
+        self.start_date = start_date
+        self.end_date = end_date
     
     def build_all_df(self):
         self.units_df = build_units_df(self.match_data)
         self.items_df = build_items_df(self.units_df['Item'])
         #self.traits_df = build_traits_df(self.match_data)
+
+        self.units_df.to_csv(f'experiments/dataframe/units_df_{self.region}_{self.start_date}_{self.end_date}.csv')
+        self.items_df.to_csv(f'experiments/dataframe/items_df_{self.region}_{self.start_date}_{self.end_date}.csv')
     
     def build_winner_loser_df(self):
         winner_match_data, loser_match_data = split_match_data_win_lose(self.match_data)

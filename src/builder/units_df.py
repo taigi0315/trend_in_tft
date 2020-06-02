@@ -238,7 +238,7 @@ def build_units_df(match_data):
     units_df = add_average_tier_on_unit_df(units_df)
     units_df = add_average_num_item_on_unit_df(units_df)
     units_df = add_unit_count_percent_on_df(units_df)
-    unit_df = convert_champion_id_to_name(units_df)
+    units_df = convert_champion_id_to_name(units_df)
     units_df = add_champion_image_on_df(units_df)
 
     return units_df

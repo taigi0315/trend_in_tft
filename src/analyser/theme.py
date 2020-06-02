@@ -5,12 +5,11 @@ units_fig_theme = Theme(
             "Figure" : {
                 "background_fill_color": "#AEB6C1",
                 "background_fill_alpha": 0.2,
-                "plot_height": 750,
-                "plot_width": 1230
+                "plot_height": 1000,
+                "plot_width": 1610
             },
             "Axis": {
-                "major_label_text_font_size": "15pt",
-                "major_label_text_font_style": 'bold',
+                "major_label_text_font_size": "10pt",
                 "axis_label_text_font_size" : "30pt",
                 "axis_label_text_color": "#EDBE74",
                 "axis_line_color": "#3A3042",

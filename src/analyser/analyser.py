@@ -13,6 +13,7 @@ class TFTDataAnalyser:
         panels = []
         # Plot units_df
         panels += [Panel(child=build_units_plot(units_df), title='All Champions')]
+        
         # Plot units_df by cost of units
         units_df_by_cost = split_units_df_by_cost(set_name='set3', units_df=units_df)
         for key, df_data in units_df_by_cost.items():
