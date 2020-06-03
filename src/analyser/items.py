@@ -124,16 +124,16 @@ def build_default_items_plot(items_df, title=None, theme=None):
         return fig, background_image
 
 
-def build_win_lose_units_plot(win_units_df, lose_units_df, theme=None):
-        win_fig, background_image = build_basic_units_plot(
-                units_df=win_units_df,
-                title="Winner",
-                theme=theme
-        )
-        lose_fig, background_image = build_basic_units_plot(
-                units_df=lose_units_df,
-                title="Loser",
-                theme=theme
-        )
+# def build_win_lose_units_plot(win_units_df, lose_units_df, theme=None):
+#         win_fig, background_image = build_basic_units_plot(
+#                 units_df=win_units_df,
+#                 title="Winner",
+#                 theme=theme
+#         )
+#         lose_fig, background_image = build_basic_units_plot(
+#                 units_df=lose_units_df,
+#                 title="Loser",
+#                 theme=theme
+#         )
 
-        return [win_fig, lose_fig, background_image]
+#         return [win_fig, lose_fig, background_image]
