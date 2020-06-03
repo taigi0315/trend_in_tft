@@ -1,4 +1,5 @@
-from .units_plot import build_basic_units_plot, build_win_lose_units_plot
+from .units import build_default_units_plot, build_win_lose_units_plot
+from .items import build_default_items_plot
 from .helper import split_units_df_by_cost
 import pandas as pd
 from bokeh.io import save, output_file
@@ -11,19 +12,19 @@ class TFTDataAnalyser:
     def __init__(self, db, region='na'):
         self.db = db
 
-    def basic_units_plot(self, units_df):
+    def default_units_plot(self, units_df):
         output_file(f"experiments/plot/unit_plot/units_plot.html")
 
         # Plot with all units
         panels = []
-        fig, background_image = build_basic_units_plot(units_df) 
+        fig, background_image = build_default_units_plot(units_df) 
         panels += [Panel(child=Row(fig, background_image), title='All Champions')]
         
         # Plot by cost of units
         units_df_by_cost = split_units_df_by_cost(set_name='set3', units_df=units_df)
         for index, df_data in enumerate(units_df_by_cost.values()):
             cost_unit_df = pd.DataFrame(df_data, columns = units_df.columns)
-            fig, background_image = build_basic_units_plot(cost_unit_df, theme=units_fig_theme) 
+            fig, background_image = build_default_units_plot(cost_unit_df, theme=units_fig_theme) 
             panels += [Panel(child=Row(fig, background_image), title=f'{index+1} Cost Champions')]
 
         tabs = Tabs(tabs=panels)
@@ -41,9 +42,9 @@ class TFTDataAnalyser:
         win_plots += [Row(win_fig, background_image)]
         win_units_df_by_cost = split_units_df_by_cost(set_name='set3', units_df=win_units_df)
         
-        for key, df_data in win_units_df_by_cost.items():
+        for df_data in win_units_df_by_cost.values():
             cost_unit_df = pd.DataFrame(df_data, columns = win_units_df.columns)
-            fig, background_image = build_basic_units_plot(cost_unit_df, theme=win_lose_units_fig_theme) 
+            fig, background_image = build_default_units_plot(cost_unit_df, theme=win_lose_units_fig_theme) 
             win_plots += [Row(fig, background_image)]
 
         # Loser plot  by cost of units
@@ -51,9 +52,9 @@ class TFTDataAnalyser:
         lose_plots += [Row(lose_fig, background_image)]
         lose_units_df_by_cost = split_units_df_by_cost(set_name='set3', units_df=lose_units_df)
         
-        for key, df_data in lose_units_df_by_cost.items():
+        for df_data in lose_units_df_by_cost.values():
             cost_unit_df = pd.DataFrame(df_data, columns = lose_units_df.columns)
-            fig, background_image = build_basic_units_plot(cost_unit_df, theme=win_lose_units_fig_theme) 
+            fig, background_image = build_default_units_plot(cost_unit_df, theme=win_lose_units_fig_theme) 
             lose_plots += [Row(fig, background_image)]
         
         win_lose_tabs = []
@@ -66,3 +67,10 @@ class TFTDataAnalyser:
         
         res = Tabs(tabs=win_lose_tabs)
         save(res)
+
+    def default_items_plot(self, items_df):
+        output_file(f"experiments/plot/item_plot/items_plot.html")
+
+        fig, background_image = build_default_items_plot(items_df)
+        
+        save(Row(fig, background_image))

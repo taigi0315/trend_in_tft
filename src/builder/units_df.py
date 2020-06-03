@@ -44,7 +44,8 @@ def get_units_in_multi_match(multi_match_data):
         units = units + get_units_in_single_match(match)
     
     return units
-    
+
+
 def build_unit_hashtable(unit_list):
     """
     Build unit hashtable
@@ -170,6 +171,50 @@ def convert_champion_id_to_name(units_df):
     return units_df
 
 
+def build_unit_item_hashtable(list_of_unit):
+    """
+    Build item hash table
+    Arguments:
+        list_of_unit(list): list of unit data in dict
+    REturns:
+        item_hash(Dict): item in hashtable
+            key(String): id of item,
+            value(Dict): {
+                count
+                sum_placement
+            }
+    """
+    item_hash = {}
+    for unit in list_of_unit:
+        # Items used with the champ
+        if 99 in unit['items']:
+            if 99 not in item_hash.keys():
+                item_hash[99] = {
+                    'count': 1,
+                    'sum_placement': unit['placement']
+                }
+            else:
+                item_hash[99]['count'] += 1
+                item_hash[99]['sum_placement'] += unit['placement']
+        else: 
+            # Unit can holds up to 3 items
+            for item in unit['items']:
+                if item not in item_hash.keys():
+                    item_hash[item] = {
+                    'count': 1,
+                    'sum_placement': unit['placement']
+                }
+                else:
+                    item_hash[item]['count'] += 1
+                    item_hash[item]['sum_placement'] += unit['placement']
+            
+        # Convert Sum(placement) to Avg(placement)
+        for item_data in item_hash.values():
+            item_data['average_placement'] = item_data['sum_placement']/item_data['count']
+    
+    return item_hash
+
+
 def build_units_df(match_data):
     '''
     Build a dataframe for unit useage analysis
@@ -187,45 +232,19 @@ def build_units_df(match_data):
     units_df_data = []
     for champ_name, list_of_unit in units_hash.items():
         tiers_list = []
-        item_hash = {}
         traits_list = []
         placement_list = []
         
-
         for unit in list_of_unit:
             # Champion tier
             tiers_list.append(unit['tier'])
             # Placements with the champ
             placement_list.append(unit['placement'])
-            
-            # Items used with the champ
-            if 99 in unit['items']:
-                if 99 not in item_hash.keys():
-                    item_hash[99] = {
-                        'count': 1,
-                        'average_placement': unit['placement']
-                    }
-                else:
-                    item_hash[99]['count'] += 1
-                    item_hash[99]['average_placement'] += unit['placement']
-            else: 
-                # Unit can holds up to 3 items
-                for item in unit['items']:
-                    if item not in item_hash.keys():
-                        item_hash[item] = {
-                        'count': 1,
-                        'average_placement': unit['placement']
-                    }
-                    else:
-                        item_hash[item]['count'] += 1
-                        item_hash[item]['average_placement'] += unit['placement']
-            # Convert Sum(placement) to Avg(placement)
-            for item_data in item_hash.values():
-                item_data['average_placement'] = item_data['average_placement']/item_data['count']
-
             # Traits used with the champ
             traits_list += convert_traits(unit['traits'])
-            
+
+        item_hash = build_unit_item_hashtable(list_of_unit)
+
         champ_tiers = dict(Counter(tiers_list))
         champ_traits = dict(Counter(traits_list))
         champ_placements = dict(Counter(placement_list))

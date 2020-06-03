@@ -17,7 +17,6 @@ units_fig_theme = Theme(
                 "axis_line_alpha": 0.7
             },
             "Grid": {
-
             },
             "Title": {
                 "text_color": "#feffe1",
@@ -46,7 +45,6 @@ win_lose_units_fig_theme = Theme(
                 "axis_line_alpha": 0.7
             },
             "Grid": {
-
             },
             "Title": {
                 "text_color": "#feffe1",

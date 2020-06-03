@@ -19,44 +19,39 @@ def hover_tool():
                 <div style="border-radius: 1px; background-color:rgba(0,0,0,0.1);">
                         <img src=@Image alt="" width="125" height="125">
                 </div>
-                <div style="text-align:center; font-size:16px;"><strong>@Champion_Name</strong></div>
+                <div style="text-align:center; font-size:16px;"><strong>@Item_Name</strong></div>
                 <div><strong>Count: @Count (@Count_Pct%)</strong></div>
-                <div><strong>Avg_Tier: @Average_Tier</strong></div>
                 <div><strong>Avg_Placement: @Average_Placement</strong></div>
-                <div><strong>Avg_Item: @Average_Item</strong></div>
         </div>
         """
 
         return hover
 
-def build_basic_units_plot(units_df, title=None, theme=None):
+def build_default_items_plot(items_df, title=None, theme=None):
         """
-        Plot units figure
+        Plot default items figure
         """
         # Set Theme
         if theme:
                 curdoc().theme = theme
         
-        sorted_units_df = units_df.sort_values(by=['Count'], ascending=False)
-        Champion_Name = sorted_units_df['Champion_Name'].tolist()
-        Count = sorted_units_df['Count'].tolist()
-        Average_Tier = sorted_units_df['Average_Tier'].tolist()
-        Average_Placement = sorted_units_df['Average_Placement'].tolist()
-        Image = sorted_units_df['Image'].tolist()
+        sorted_items_df = items_df.sort_values(by=['Count'], ascending=False)
+        Item_Name = sorted_items_df['Name'].tolist()
+        Count = sorted_items_df['Count'].tolist()
+        Average_Placement = sorted_items_df['Average_Placement'].tolist()
+        Image = sorted_items_df['Image'].tolist()
         
         source = ColumnDataSource(data=dict(
-                Champion_Name=Champion_Name,
+                Item_Name=Item_Name,
                 Count=Count,
-                Count_Pct=sorted_units_df['Count(%)'],
-                Average_Tier=Average_Tier,
+                Count_Pct=sorted_items_df['Count(%)'],
                 Average_Placement=Average_Placement,
-                Average_Item=sorted_units_df['Average_#_Item'],
                 Image=Image)
         )
               
         fig = figure(
-                x_range=Champion_Name,
-                y_range=(0, max(Count)+10),
+                x_range=Item_Name,
+                y_range=(0, int(max(Count)*0.05)),
                 toolbar_location=None,
                 tools="",
                 y_axis_label='Count'
@@ -67,19 +62,10 @@ def build_basic_units_plot(units_df, title=None, theme=None):
         # Add hover tool div
         fig.add_tools(hover_tool())
 
-        # Adding second axis for Scatter Plot(Champion_Name | Average_Tier)
-        fig.add_layout(
-                LinearAxis(
-                        y_range_name="Average_Tier",
-                        axis_label="Tier",
-                        ticker=[0, 1, 2, 3, 4, 5]
-                ), "right"
-        )
-
         # Set color palette on bar color
         bar_color_palette = ['#FE3D3D', "#F59537", "#FCD89F", "#998c8c", "#302E2E"]
         
-        # Add ColorBar(Champion_Name | Average_Placement)
+        # Add ColorBar(Item_Name | Average_Placement)
         tier_mapper = linear_cmap(
                 field_name='Average_Placement',
                 palette=bar_color_palette,
@@ -95,7 +81,7 @@ def build_basic_units_plot(units_df, title=None, theme=None):
                         ticker=FixedTicker(ticks=[1, 2, 3, 4, 5])
                 ), 'right')
         
-        # Plot bar chart(Champion_Name | Count)
+        # Plot bar chart(Item_Name | Count)
         bar_color_mapper = linear_cmap(
                 "Average_Placement",
                 bar_color_palette,
@@ -103,25 +89,10 @@ def build_basic_units_plot(units_df, title=None, theme=None):
                 high=max(Average_Placement)
         )
         fig.vbar(
-                x='Champion_Name',
+                x='Item_Name',
                 top='Count',
                 color=bar_color_mapper,
                 width=0.77,
-                source=source
-        )
-
-        # Add second y-axis for average tier
-        fig.extra_y_ranges = {"Average_Tier": Range1d(start=0.5, end=3.5)}
-        fig.hex(
-                x="Champion_Name",
-                y="Average_Tier",
-                y_range_name="Average_Tier", 
-                color='#A517E1',
-                size=14,
-                line_color="#9B0DAC",
-                line_width=2,
-                fill_alpha=0.55,
-                line_alpha=0.85,
                 source=source
         )
 
