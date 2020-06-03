@@ -21,10 +21,10 @@ class TFTDataAnalyser:
         
         # Plot by cost of units
         units_df_by_cost = split_units_df_by_cost(set_name='set3', units_df=units_df)
-        for key, df_data in units_df_by_cost.items():
+        for index, df_data in enumerate(units_df_by_cost.values()):
             cost_unit_df = pd.DataFrame(df_data, columns = units_df.columns)
             fig, background_image = build_basic_units_plot(cost_unit_df, theme=units_fig_theme) 
-            panels += [Panel(child=Row(fig, background_image), title=key)]
+            panels += [Panel(child=Row(fig, background_image), title=f'{index+1} Cost Champions')]
 
         tabs = Tabs(tabs=panels)
         save(tabs)
@@ -37,30 +37,32 @@ class TFTDataAnalyser:
         
 
         # Winner plot  by cost of units
-        win_panels = []
-        win_panels += [Panel(child=Row(win_fig, background_image), title='All Champions')]
+        win_plots = []
+        win_plots += [Row(win_fig, background_image)]
         win_units_df_by_cost = split_units_df_by_cost(set_name='set3', units_df=win_units_df)
         
         for key, df_data in win_units_df_by_cost.items():
             cost_unit_df = pd.DataFrame(df_data, columns = win_units_df.columns)
             fig, background_image = build_basic_units_plot(cost_unit_df, theme=win_lose_units_fig_theme) 
-            win_panels += [Panel(child=Row(fig, background_image), title=key)]
-        
-        win_tabs = Tabs(tabs=win_panels)
+            win_plots += [Row(fig, background_image)]
 
         # Loser plot  by cost of units
-        lose_panels = []
-        lose_panels += [Panel(child=Row(lose_fig, background_image), title='All Champions')]
+        lose_plots = []
+        lose_plots += [Row(lose_fig, background_image)]
         lose_units_df_by_cost = split_units_df_by_cost(set_name='set3', units_df=lose_units_df)
         
         for key, df_data in lose_units_df_by_cost.items():
             cost_unit_df = pd.DataFrame(df_data, columns = lose_units_df.columns)
             fig, background_image = build_basic_units_plot(cost_unit_df, theme=win_lose_units_fig_theme) 
-            lose_panels += [Panel(child=Row(fig, background_image), title=key)]
+            lose_plots += [Row(fig, background_image)]
         
-        los_tabs = Tabs(tabs=lose_panels)
+        win_lose_tabs = []
+        for index in range(len(win_plots)):
+            if index == 0:
+                tab_title = 'All Champions'
+            else:
+                tab_title = f'{index+1} Cost Champions'
+            win_lose_tabs += [Panel(child=gridplot([[win_plots[index], lose_plots[index] ]]), title=tab_title)]
         
-        win_tabs.active = los_tabs.active
-        res = gridplot([[win_tabs, los_tabs]])
-        
+        res = Tabs(tabs=win_lose_tabs)
         save(res)
