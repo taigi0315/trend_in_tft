@@ -68,7 +68,7 @@ def build_unit_hashtable(unit_list):
     return unit_hash
 
 
-def add_average_tier_on_unit_df(unit_df):
+def add_average_tier_on_units_df(unit_df):
     """
     Enrich the dataFrame with average tier of units column
     Argumnets:
@@ -96,7 +96,7 @@ def add_average_tier_on_unit_df(unit_df):
     return unit_df
 
 
-def add_average_num_item_on_unit_df(unit_df):
+def add_average_num_item_on_units_df(units_df):
     """
     Enrich the dataFrame with average number of item column
     Argumnets:
@@ -104,22 +104,22 @@ def add_average_num_item_on_unit_df(unit_df):
     Returns:
         unit_df(dataFrame): unit_df enriched with Average_Num_Item column
     """
-    def calculate_average_num_item(cnt, item_hash):
+    def calculate_average_num_item(cnt, used_item_list):
         """
         Calculate average of tier
         Arguments:
-            item_dict(Dict)
+            used_item_list(List)
         Returns:
             average_num_item(Float)
         """
         sum = 0
-        for val in item_hash.values():
-            sum += int(val['count'])
+        for item in used_item_list:
+            sum += int(item['Count'])
 
         return sum/cnt
             
-    unit_df['Average_#_Item'] = unit_df.apply(lambda row: calculate_average_num_item(row.Count, row.Item), axis=1)
-    return unit_df
+    units_df['Average_#_Item'] = units_df.apply(lambda row: calculate_average_num_item(row.Count, row.Item), axis=1)
+    return units_df
 
 
 def add_unit_count_percent_on_df(unit_df):
@@ -186,31 +186,33 @@ def build_unit_item_hashtable(list_of_unit):
     """
     item_hash = {}
     for unit in list_of_unit:
-        # Items used with the champ
+        # 99 is a thief guntlet that create 2 item randomly
         if 99 in unit['items']:
             if 99 not in item_hash.keys():
                 item_hash[99] = {
-                    'count': 1,
-                    'sum_placement': unit['placement']
+                    'Id': 99,
+                    'Count': 1,
+                    'Sum_Placement': unit['placement']
                 }
             else:
-                item_hash[99]['count'] += 1
-                item_hash[99]['sum_placement'] += unit['placement']
+                item_hash[99]['Count'] += 1
+                item_hash[99]['Sum_Placement'] += unit['placement']
         else: 
             # Unit can holds up to 3 items
             for item in unit['items']:
                 if item not in item_hash.keys():
                     item_hash[item] = {
-                    'count': 1,
-                    'sum_placement': unit['placement']
-                }
+                        'Id': item,
+                        'Count': 1,
+                        'Sum_Placement': unit['placement']
+                    }
                 else:
-                    item_hash[item]['count'] += 1
-                    item_hash[item]['sum_placement'] += unit['placement']
+                    item_hash[item]['Count'] += 1
+                    item_hash[item]['Sum_Placement'] += unit['placement']
             
-        # Convert Sum(placement) to Avg(placement)
-        for item_data in item_hash.values():
-            item_data['average_placement'] = item_data['sum_placement']/item_data['count']
+    # Convert Sum(placement) to Avg(placement)
+    for item_data in item_hash.values():
+        item_data['Average_Placement'] = item_data['Sum_Placement']/item_data['Count']
     
     return item_hash
 
@@ -249,13 +251,13 @@ def build_units_df(match_data):
         champ_traits = dict(Counter(traits_list))
         champ_placements = dict(Counter(placement_list))
         average_placement = sum(placement_list) / len(list_of_unit)
-
-        units_df_data.append([champ_name, len(list_of_unit), champ_tiers, champ_traits, item_hash, champ_placements, average_placement])
+        champ_items = list(item_hash.values())
+        units_df_data.append([champ_name, len(list_of_unit), champ_tiers, champ_traits, champ_items, champ_placements, average_placement])
     
     
     units_df = pd.DataFrame(units_df_data, columns = ['Champion_Id', 'Count', 'Tier', 'Traits', 'Item', 'Placement_List', 'Average_Placement']) 
-    units_df = add_average_tier_on_unit_df(units_df)
-    units_df = add_average_num_item_on_unit_df(units_df)
+    units_df = add_average_tier_on_units_df(units_df)
+    units_df = add_average_num_item_on_units_df(units_df)
     units_df = add_unit_count_percent_on_df(units_df)
     units_df = convert_champion_id_to_name(units_df)
     units_df = add_champion_image_on_df(units_df)

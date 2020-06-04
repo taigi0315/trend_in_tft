@@ -1,5 +1,5 @@
 from bokeh.themes.theme import Theme
-units_fig_theme = Theme(
+all_unit_usage_plot_theme = Theme(
     json={
         "attrs" : {
             "Figure" : {
@@ -27,7 +27,7 @@ units_fig_theme = Theme(
     }   
 )
 
-win_lose_units_fig_theme = Theme(
+winner_loser_unit_usage_plot_theme = Theme(
     json={
         "attrs" : {
             "Figure" : {
@@ -54,3 +54,6 @@ win_lose_units_fig_theme = Theme(
         }
     }   
 )
+
+bar_color_palette = ['#FE3D3D', "#F59537", "#FCD89F", "#998c8c", "#302E2E"]
+        

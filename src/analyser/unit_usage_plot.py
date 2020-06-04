@@ -8,11 +8,20 @@ from bokeh.plotting import figure
 from bokeh.transform import linear_cmap
 
 from .helper import get_count_axis_ticker
-
+from .theme import bar_color_palette
 
 
 def hover_tool():
-         # Add Tooltips
+        """
+        Return custom HoverTool with <div>
+        <div>
+                - champion image
+                - champion usage count
+                - champion average tier
+                - champion average placement
+                - champion average number of item
+        </div>
+        """
         hover = HoverTool()
         hover.tooltips = """
         <div style="background-color:rgba(0,0,0,0.1);">
@@ -29,14 +38,18 @@ def hover_tool():
 
         return hover
 
-def build_default_units_plot(units_df, title=None, theme=None):
+def build_all_player_unit_usage_plot(units_df, title=None, theme=None):
         """
-        Plot units figure
-        """
-        # Set Theme
-        if theme:
-                curdoc().theme = theme
-        
+        Build a figure of unit usage plot
+        Arguments:
+                units_df(DataFrame): result from TFTDataBuilder.build_units_dataframe
+                columns : ['Champion_Id', 'Champion_Name', 'Count', 'Tier', 'Traits',
+                        'Item', 'Average_#_Item', 'Placement_List', 'Average_Placement',
+                        'Average_Tier', 'Count(%)', 'Image']) 
+        Returns:
+                fig(Figure)
+                background_image: logo image file
+        """       
         sorted_units_df = units_df.sort_values(by=['Count'], ascending=False)
         Champion_Name = sorted_units_df['Champion_Name'].tolist()
         Count = sorted_units_df['Count'].tolist()
@@ -61,11 +74,12 @@ def build_default_units_plot(units_df, title=None, theme=None):
                 tools="",
                 y_axis_label='Count'
         )
+
+        # Set Theme
+        if theme:
+                curdoc().theme = theme
         if title:
                 fig.title.text = title
-
-        # Add hover tool div
-        fig.add_tools(hover_tool())
 
         # Adding second axis for Scatter Plot(Champion_Name | Average_Tier)
         fig.add_layout(
@@ -75,9 +89,6 @@ def build_default_units_plot(units_df, title=None, theme=None):
                         ticker=[0, 1, 2, 3, 4, 5]
                 ), "right"
         )
-
-        # Set color palette on bar color
-        bar_color_palette = ['#FE3D3D', "#F59537", "#FCD89F", "#998c8c", "#302E2E"]
         
         # Add ColorBar(Champion_Name | Average_Placement)
         tier_mapper = linear_cmap(
@@ -142,25 +153,36 @@ def build_default_units_plot(units_df, title=None, theme=None):
         # Adding background image to plot
         logo_image_path = "../../../assets/image/tft_logo.png"
         plot_width = fig.plot_width
-        plot_height= plot_width * 1.61
-        logo_image_height = plot_width*0.16
-        logo_image_width = plot_height*0.16
+        plot_height= fig.plot_height
+        logo_image_width = plot_width*0.15
+        logo_image_height = plot_height*0.15
         background_image = Div(
-            text = f'<div style="position: relative; right:{plot_width*0.5 + logo_image_width}px; top:{plot_height*0.02}px; z-index:100;">\
+            text = f'<div style="position: relative; right:{plot_width*0.6 + logo_image_width}px; top:{plot_height*0.05}px; z-index:100;">\
             <img src={logo_image_path} style="width:{logo_image_width}; height:{logo_image_height}px; opacity: 0.70">\
             </div>')
 
         return fig, background_image
 
 
-def build_win_lose_units_plot(win_units_df, lose_units_df, theme=None):
-        win_fig, background_image = build_default_units_plot(
-                units_df=win_units_df,
+def build_winner_loser_unit_usage_plot(winner_units_df, loser_units_df, theme=None):
+        """
+        Build a figure of unit usage plot spliting units_df in winner(placement:1~4) and loser(placement:5~8)
+        Arguments:
+                units_df(DataFrame): result from TFTDataBuilder.build_units_dataframe
+                columns : ['Champion_Id', 'Champion_Name', 'Count', 'Tier', 'Traits',
+                        'Item', 'Average_#_Item', 'Placement_List', 'Average_Placement',
+                        'Average_Tier', 'Count(%)', 'Image']) 
+        Returns:
+                fig(Figure)
+                background_image: logo image file
+        """       
+        win_fig, background_image = build_all_player_unit_usage_plot(
+                units_df=winner_units_df,
                 title="Winner",
                 theme=theme
         )
-        lose_fig, background_image = build_default_units_plot(
-                units_df=lose_units_df,
+        lose_fig, background_image = build_all_player_unit_usage_plot(
+                units_df=loser_units_df,
                 title="Loser",
                 theme=theme
         )
