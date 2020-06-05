@@ -9,7 +9,7 @@ unit_stacked_bar_theme = Theme(
                 "background_fill_color": "#1C1A10",
                 "background_fill_alpha": 0.85,
                 "plot_height": 1000,
-                "plot_width": 1610
+                "plot_width": 1600
             },
             "Axis": {
                 "major_label_text_font_size": "10pt",
