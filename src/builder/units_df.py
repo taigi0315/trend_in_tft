@@ -1,6 +1,10 @@
 import pandas as pd
 from collections import Counter
+import json
 
+CHAMPIONS = None
+with open('assets/set3/champions.json') as f:
+        CHAMPIONS  = json.load(f)
 
 def get_units_in_single_match(single_match_data):
     """
@@ -162,6 +166,10 @@ def add_champion_image_on_df(units_df):
     units_df['Image'] = units_df.apply(lambda row: f"../../../assets/set3/champions/{str(row.Champion_Name).lower()}.png", axis=1)
     return units_df
 
+def get_champion_cost(champion_id):
+    for champ in CHAMPIONS:
+            if str(champ['championId']) == str(champion_id):
+                return champ['cost']
 
 def convert_champion_id_to_name(units_df):
     """
@@ -250,6 +258,16 @@ def build_units_df(match_data):
         champ_tiers = dict(Counter(tiers_list))
         champ_traits = dict(Counter(traits_list))
         champ_placements = dict(Counter(placement_list))
+        
+        # Fill up missing cases ex) no specific placement with the unit
+        for p in range(1, 9):
+            if p not in champ_placements.keys():
+                champ_placements[p] = 0
+        # Fill up missing cases ex) no specific tier with the unit
+        for p in range(1, 4):
+            if p not in champ_tiers.keys():
+                champ_tiers[p] = 0
+            
         average_placement = sum(placement_list) / len(list_of_unit)
         champ_items = list(item_hash.values())
         units_df_data.append([champ_name, len(list_of_unit), champ_tiers, champ_traits, champ_items, champ_placements, average_placement])
@@ -261,5 +279,6 @@ def build_units_df(match_data):
     units_df = add_unit_count_percent_on_df(units_df)
     units_df = convert_champion_id_to_name(units_df)
     units_df = add_champion_image_on_df(units_df)
+    units_df['Cost'] = units_df.apply(lambda row: get_champion_cost(row.Champion_Id), axis=1)
 
     return units_df
