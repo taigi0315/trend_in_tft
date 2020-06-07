@@ -18,7 +18,7 @@ class TFTMatchDataCollector:
             db: MongoDB connection
         """
         # token needs to be updated daily
-        self.token = token
+        self.token = "RGAPI-a0ce4945-fe9e-4940-aff0-540561890304"
         self.header = {
             'X-Riot-Token': self.token
         }
@@ -151,5 +151,5 @@ if __name__ == "__main__":
     MatchDataCollector.get_n_matches(
         region='na1',
         tier='challenger',
-        count=300
+        count=100
     )

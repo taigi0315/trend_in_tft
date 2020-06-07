@@ -40,7 +40,7 @@ if __name__ == "__main__":
         match_data=data
     )
     DataBuilder.build_units_dataframe(save=True)
-    
+    DataBuilder.build_units_item_placement_dataframe(save=True) 
     
     TFTDataAnalyser = TFTDataAnalyser(
         db=db,
@@ -49,6 +49,12 @@ if __name__ == "__main__":
     TFTDataAnalyser.units_count_tier_plot()
     TFTDataAnalyser.units_count_placement_plot()
 
+
+    # ALl Items
+    DataBuilder.build_items_dataframe(save=True)
+    TFTDataAnalyser.items_plot(items_df = DataBuilder.items_df)
+
+
     # # Winner/Loser Units
     # DataBuilder.build_winner_loser_dataframe(save=True)  
     # TFTDataAnalyser.winner_loser_units_plot(
@@ -56,9 +62,6 @@ if __name__ == "__main__":
     #     loser_units_df=DataBuilder.loser_units_df
     # )
     
-    # ALl Items
-    DataBuilder.build_items_dataframe(save=True)
-    TFTDataAnalyser.items_plot(items_df = DataBuilder.items_df)
 
     # # Winner/Loser Items
     # DataBuilder.build_winner_loser_dataframe(save=True)  
@@ -66,5 +69,3 @@ if __name__ == "__main__":
     #     winner_items_df=DataBuilder.winner_items_df,
     #     loser_items_df=DataBuilder.loser_items_df
     # )
-
-# Get list of name for each cost and save it under set3 

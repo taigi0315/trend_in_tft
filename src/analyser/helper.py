@@ -31,7 +31,7 @@ def split_units_df_by_cost(set_name, units_df):
     }
     
     for index, row in units_df.iterrows():
-        champ_cost = next(champ['cost'] for champ in champions_info if champ['championId'] == row['Champion_Id'])
+        champ_cost = next(champ['cost'] for champ in champions_info if champ['championId'] == row['Id'])
         hash_key = f"cost_{champ_cost}_champions"
         units_df_by_cost[hash_key].append(dict(row))
         

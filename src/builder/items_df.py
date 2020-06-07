@@ -61,36 +61,3 @@ def find_item_name(item_id_name_list, item_id):
      for item in item_id_name_list:
             if str(item['id']) == str(item_id):
                 return item['name']
-    
-
-def build_items_df(match_data):
-    """
-    Build a dataframe for item usage analysis
-    Arguments:
-        match_data(DataFrame): list of match data(Dict)
-    Returns:
-        item_df(dataFrame): |Id(String) | Name(String) | Count(Int) | Average_Placement(Float) | Image(String)|
-    """
-
-    item_hashtable = {}
-    for match in match_data:
-        players = match['match']['info']['participants']
-        for player in players:
-            player_placement = player['placement']
-            for unit in player['units']:
-                    item_hashtable = update_item_hashtable(item_hashtable, unit['items'], player_placement)    
-    
-    with open('assets/set3/items.json') as f:
-        item_id_name_list = json.load(f)
-    
-    
-    items_df = pd.DataFrame(item_hashtable.values(), columns=['Id', 'Count', 'Sum_Placement', 'Placement_List'])
-    items_df['Placements'] = items_df.apply(lambda row: dict(Counter(row.Placement_List)), axis=1)
-    items_df['Name'] = items_df.apply(lambda row: find_item_name(item_id_name_list, row.Id), axis=1)
-    items_df['Average_Placement'] = items_df.apply(lambda row: (row.Sum_Placement / row.Count), axis=1)
-    items_df = add_item_image_on_df(items_df)
-    items_df = add_item_count_percent_on_df(items_df)
-    
-    return items_df
-
-                

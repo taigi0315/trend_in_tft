@@ -1,4 +1,6 @@
+import os
 import pandas as pd
+import numpy as np
 from collections import Counter
 import json
 
@@ -108,17 +110,17 @@ def add_average_num_item_on_units_df(units_df):
     Returns:
         unit_df(dataFrame): unit_df enriched with Average_Num_Item column
     """
-    def calculate_average_num_item(cnt, used_item_list):
+    def calculate_average_num_item(cnt, used_item_hash):
         """
         Calculate average of tier
         Arguments:
-            used_item_list(List)
+            used_item_hash(Dict)
         Returns:
             average_num_item(Float)
         """
         sum = 0
-        for item in used_item_list:
-            sum += int(item['Count'])
+        for item_id, item_data in used_item_hash.items():
+            sum += int(item_data['Count'])
 
         return sum/cnt
             
@@ -163,19 +165,21 @@ def add_champion_image_on_df(units_df):
     Add image file path to df
     """
     
-    units_df['Image'] = units_df.apply(lambda row: f"../../../assets/set3/champions/{str(row.Champion_Name).lower()}.png", axis=1)
+    units_df['Image'] = units_df.apply(lambda row: f"../../../assets/set3/champions/{str(row.Name).lower()}.png", axis=1)
     return units_df
+
 
 def get_champion_cost(champion_id):
     for champ in CHAMPIONS:
             if str(champ['championId']) == str(champion_id):
                 return champ['cost']
 
+
 def convert_champion_id_to_name(units_df):
     """
     Enrich the units_df with champion name
     """
-    units_df['Champion_Name'] = units_df.apply(lambda row: str(row.Champion_Id[5:]), axis=1)
+    units_df['Name'] = units_df.apply(lambda row: str(row.Id[5:]), axis=1)
     return units_df
 
 
@@ -200,11 +204,13 @@ def build_unit_item_hashtable(list_of_unit):
                 item_hash[99] = {
                     'Id': 99,
                     'Count': 1,
-                    'Sum_Placement': unit['placement']
+                    'Sum_Placement': unit['placement'],
+                    'Placement_List': [unit['placement']]
                 }
             else:
                 item_hash[99]['Count'] += 1
                 item_hash[99]['Sum_Placement'] += unit['placement']
+                item_hash[99]['Placement_List'].append(unit['placement'])
         else: 
             # Unit can holds up to 3 items
             for item in unit['items']:
@@ -212,73 +218,16 @@ def build_unit_item_hashtable(list_of_unit):
                     item_hash[item] = {
                         'Id': item,
                         'Count': 1,
-                        'Sum_Placement': unit['placement']
+                        'Sum_Placement': unit['placement'],
+                        'Placement_List': [unit['placement']]
                     }
                 else:
                     item_hash[item]['Count'] += 1
                     item_hash[item]['Sum_Placement'] += unit['placement']
+                    item_hash[item]['Placement_List'].append(unit['placement'])
             
     # Convert Sum(placement) to Avg(placement)
     for item_data in item_hash.values():
         item_data['Average_Placement'] = item_data['Sum_Placement']/item_data['Count']
     
     return item_hash
-
-
-def build_units_df(match_data):
-    '''
-    Build a dataframe for unit useage analysis
-    Arguments:
-        match_data(List): list of match data(Dict)
-    Returns:
-        unit_df(dataFrame): |name(String)|Count(Int)|tiers(List)|items(List)|Traits(Dict)|Average_Placement(Float)|Average_Tier(Float)|Average_#_Item(Float)|Count(%)(Float)|
-    
-    sample single unit data :
-    '''
-
-    units_list = get_units_in_multi_match(match_data)
-    units_hash = build_unit_hashtable(units_list)
-    
-    units_df_data = []
-    for champ_name, list_of_unit in units_hash.items():
-        tiers_list = []
-        traits_list = []
-        placement_list = []
-        
-        for unit in list_of_unit:
-            # Champion tier
-            tiers_list.append(unit['tier'])
-            # Placements with the champ
-            placement_list.append(unit['placement'])
-            # Traits used with the champ
-            traits_list += convert_traits(unit['traits'])
-
-        item_hash = build_unit_item_hashtable(list_of_unit)
-
-        champ_tiers = dict(Counter(tiers_list))
-        champ_traits = dict(Counter(traits_list))
-        champ_placements = dict(Counter(placement_list))
-        
-        # Fill up missing cases ex) no specific placement with the unit
-        for p in range(1, 9):
-            if p not in champ_placements.keys():
-                champ_placements[p] = 0
-        # Fill up missing cases ex) no specific tier with the unit
-        for p in range(1, 4):
-            if p not in champ_tiers.keys():
-                champ_tiers[p] = 0
-            
-        average_placement = sum(placement_list) / len(list_of_unit)
-        champ_items = list(item_hash.values())
-        units_df_data.append([champ_name, len(list_of_unit), champ_tiers, champ_traits, champ_items, champ_placements, average_placement])
-    
-    
-    units_df = pd.DataFrame(units_df_data, columns = ['Champion_Id', 'Count', 'Tier', 'Traits', 'Item', 'Placement_List', 'Average_Placement']) 
-    units_df = add_average_tier_on_units_df(units_df)
-    units_df = add_average_num_item_on_units_df(units_df)
-    units_df = add_unit_count_percent_on_df(units_df)
-    units_df = convert_champion_id_to_name(units_df)
-    units_df = add_champion_image_on_df(units_df)
-    units_df['Cost'] = units_df.apply(lambda row: get_champion_cost(row.Champion_Id), axis=1)
-
-    return units_df

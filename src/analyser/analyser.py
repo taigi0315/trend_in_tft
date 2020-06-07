@@ -5,11 +5,10 @@ from bokeh.models import Row
 from bokeh.models.widgets import Panel, Tabs
 
 from .helper import split_units_df_by_cost
-from .item_usage_plot import (build_all_player_items_plot,
-                              build_winner_loser_item_usage_plot)
+from .item_count_placement_plot import build_item_count_placement_plot
 from .theme import unit_stacked_bar_theme
-from .unit_count_tier_plot import build_unit_count_tier_plot
 from .unit_count_placement_plot import build_unit_count_placement_plot
+from .unit_count_tier_plot import build_unit_count_tier_plot
 
 
 class TFTDataAnalyser:
@@ -113,26 +112,26 @@ class TFTDataAnalyser:
             y_axis: item usage count
             vbar_color : average placement map
         """
-        output_file(f"experiments/plot/item_plot/items_plot.html")
+        output_file(f"experiments/plot/item_plot/item_count_placement_plot.html")
 
-        fig, background_image = build_all_player_items_plot(items_df)
+        fig, background_image = build_item_count_placement_plot(items_df)
         
         save(Row(fig, background_image))
 
 
 
-    def winner_loser_items_plot(self, winner_items_df, loser_items_df):
-        """
-        Build items_plot for winner and loser group
-            x_axis: item name
-            y_axis: item usage count
-            vbar_color : average placement map
-        """
-        output_file(f"experiments/plot/item_plot/winner_loser_items_plot.html")
-        # Plot with all units
-        winner_fig, loser_fig, background_image = build_winner_loser_item_usage_plot(winner_items_df, loser_items_df)
-        winner_plot = Row(winner_fig, background_image)
-        loser_plot = Row(loser_fig, background_image)
+    # def winner_loser_items_plot(self, winner_items_df, loser_items_df):
+    #     """
+    #     Build items_plot for winner and loser group
+    #         x_axis: item name
+    #         y_axis: item usage count
+    #         vbar_color : average placement map
+    #     """
+    #     output_file(f"experiments/plot/item_plot/winner_loser_items_plot.html")
+    #     # Plot with all units
+    #     winner_fig, loser_fig, background_image = build_winner_loser_item_usage_plot(winner_items_df, loser_items_df)
+    #     winner_plot = Row(winner_fig, background_image)
+    #     loser_plot = Row(loser_fig, background_image)
         
-        res = gridplot([[winner_plot, loser_plot ]])
-        save(res)
+    #     res = gridplot([[winner_plot, loser_plot ]])
+    #     save(res)

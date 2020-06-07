@@ -8,8 +8,8 @@ unit_stacked_bar_theme = Theme(
             "Figure" : {
                 "background_fill_color": "#1C1A10",
                 "background_fill_alpha": 0.85,
-                "plot_height": 1000,
-                "plot_width": 1600
+                "plot_height": 950,
+                "plot_width": 1400
             },
             "Axis": {
                 "major_label_text_font_size": "10pt",

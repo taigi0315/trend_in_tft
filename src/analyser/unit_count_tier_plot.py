@@ -28,7 +28,7 @@ def hover_tool():
                 <div style="border-radius: 1px; background-color:rgba(0,0,0,0.1);">
                         <img src=@Image alt="" width="125" height="125">
                 </div>
-                <div style="text-align:center; font-size:16px;"><strong>@Champion_Name</strong></div>
+                <div style="text-align:center; font-size:16px;"><strong>@Name</strong></div>
                 <div><strong>Count: @Count (@Count_Pct%)</strong></div>
                 <div><strong>Avg_Tier: @Average_Tier</strong></div>
                 <div><strong>Avg_Placement: @Average_Placement</strong></div>
@@ -47,7 +47,6 @@ def build_unit_count_tier_plot(units_df, title=None, theme=None):
             scatter: average placement of champion
         """
         units_df  = units_df.sort_values(by=['Cost', 'Count'])
-        Champion_Name = units_df['Champion_Name'].tolist()
         Plot_Data = {
                 "1": [],
                 "2": [],
@@ -58,7 +57,7 @@ def build_unit_count_tier_plot(units_df, title=None, theme=None):
                         Plot_Data[str(tier)].append(count)
         
         Plot_Data['Image'] = units_df['Image']
-        Plot_Data['Champion_Name'] = units_df['Champion_Name']
+        Plot_Data['Name'] = units_df['Name']
         Plot_Data['Average_Placement'] = units_df['Average_Placement']
         Plot_Data['Average_Tier'] = units_df['Average_Tier']
         Plot_Data['Average_Item'] = units_df['Average_#_Item']
@@ -68,7 +67,7 @@ def build_unit_count_tier_plot(units_df, title=None, theme=None):
         source = ColumnDataSource(data=Plot_Data)
               
         fig = figure(
-                x_range=Champion_Name,
+                x_range=units_df['Name'].tolist(),
                 y_range=(0, max(units_df['Count'])+int(max(units_df['Count'])*0.1)),
                 toolbar_location=None,
                 tools="",
@@ -103,7 +102,7 @@ def build_unit_count_tier_plot(units_df, title=None, theme=None):
         y_stack_names = ["1", "2", "3"]
         fig.vbar_stack(
             y_stack_names,
-            x='Champion_Name',
+            x='Name',
             width=0.65,
             color=unit_tier_stacked_bar_color_palette,
             alpha=0.65,
@@ -127,7 +126,7 @@ def build_unit_count_tier_plot(units_df, title=None, theme=None):
         # Add second y-axis for average tier
         fig.extra_y_ranges = {"Average_Tier": Range1d(start=0, end=3)}
         fig.hex(
-                x="Champion_Name",
+                x="Name",
                 y="Average_Tier",
                 y_range_name="Average_Tier", 
                 color="#F7E64B",
