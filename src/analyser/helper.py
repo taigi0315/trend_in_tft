@@ -1,6 +1,11 @@
 import math
 import json
 
+
+with open('assets/set3/items.json') as f:
+    ITEM_ID_NAME_LIST = json.load(f)
+
+
 def get_count_axis_ticker(max_count):
     max_num = int(math.ceil(max_count / 50.0)) * 50
     interval = int(max_num / 5)
@@ -36,3 +41,9 @@ def split_units_df_by_cost(set_name, units_df):
         units_df_by_cost[hash_key].append(dict(row))
         
     return units_df_by_cost
+
+
+def find_item_name(item_id):
+     for item in ITEM_ID_NAME_LIST:
+            if str(item['id']) == str(item_id):
+                return item['name']

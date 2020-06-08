@@ -1,4 +1,8 @@
 import copy
+import json
+
+with open('assets/set3/items.json') as f:
+    ITEM_ID_NAME_LIST = json.load(f)
 
 def split_match_data_win_lose(match_data):
     """
@@ -31,3 +35,8 @@ def split_match_data_win_lose(match_data):
         loser_match_list.append(lose_match)
     return [winner_match_list, loser_match_list]
 
+
+def find_item_name(item_id):
+     for item in ITEM_ID_NAME_LIST:
+            if str(item['id']) == str(item_id):
+                return item['name']

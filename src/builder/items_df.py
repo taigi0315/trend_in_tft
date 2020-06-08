@@ -55,9 +55,3 @@ def update_item_hashtable(item_hash, items_in_unit, player_placement):
                     item_hash[item_id]['Placement_List'].append(player_placement)
     
     return item_hash
-    
-
-def find_item_name(item_id_name_list, item_id):
-     for item in item_id_name_list:
-            if str(item['id']) == str(item_id):
-                return item['name']

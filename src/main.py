@@ -7,6 +7,10 @@ from pymongo import MongoClient
 from analyser.analyser import TFTDataAnalyser
 from builder.builder import TFTDataBuilder
 
+def get_sample_data(db):
+
+    match_data = db.collection.find({})
+    return list(match_data[:30])
 
 def get_match_data_between_dates(db, start_date, end_date, region='na1'):
     unix_start_date = int(time.mktime(date.fromisoformat(str(start_date)).timetuple())*1000)
@@ -28,8 +32,9 @@ if __name__ == "__main__":
     start_date = '2020-05-30'
     end_date = '2020-05-31'
 
-    # Collector collect data 
-    data = get_match_data_between_dates(db, start_date, end_date, region='na1')
+    # Collector collect data
+    data = get_sample_data(db)
+    # data = get_match_data_between_dates(db, start_date, end_date, region='na1')
     print(f"match_data length: {len(data)}")
 
     # Builder create DataFrame
@@ -39,33 +44,19 @@ if __name__ == "__main__":
         region=region,
         match_data=data
     )
-    DataBuilder.build_units_dataframe(save=True)
-    DataBuilder.build_units_item_placement_dataframe(save=True) 
-    
-    TFTDataAnalyser = TFTDataAnalyser(
-        db=db,
-        units_df=DataBuilder.units_df
-    )
-    TFTDataAnalyser.units_count_tier_plot()
-    TFTDataAnalyser.units_count_placement_plot()
+    DataBuilder.build_champion_dataframe()
 
+    # DataBuilder.build_units_dataframe(save=True)
+    # # DataBuilder.build_items_dataframe(save=True)
+    # DataBuilder.build_units_item_placement_dataframe(save=True) 
 
-    # ALl Items
-    DataBuilder.build_items_dataframe(save=True)
-    TFTDataAnalyser.items_plot(items_df = DataBuilder.items_df)
-
-
-    # # Winner/Loser Units
-    # DataBuilder.build_winner_loser_dataframe(save=True)  
-    # TFTDataAnalyser.winner_loser_units_plot(
-    #     winner_units_df=DataBuilder.winner_units_df,
-    #     loser_units_df=DataBuilder.loser_units_df
+    # TFTDataAnalyser = TFTDataAnalyser(
+    #     db=db,
+    #     units_df=DataBuilder.units_df,
+    #     DataBuilder = DataBuilder
     # )
-    
-
-    # # Winner/Loser Items
-    # DataBuilder.build_winner_loser_dataframe(save=True)  
-    # TFTDataAnalyser.winner_loser_items_plot(
-    #     winner_items_df=DataBuilder.winner_items_df,
-    #     loser_items_df=DataBuilder.loser_items_df
-    # )
+    # # TFTDataAnalyser.units_count_tier_plot()
+    # # TFTDataAnalyser.units_count_placement_plot()
+    # # # ALl Items
+    # # TFTDataAnalyser.items_plot(items_df = DataBuilder.items_df)
+    # TFTDataAnalyser.units_item_placement()

@@ -9,12 +9,13 @@ from .item_count_placement_plot import build_item_count_placement_plot
 from .theme import unit_stacked_bar_theme
 from .unit_count_placement_plot import build_unit_count_placement_plot
 from .unit_count_tier_plot import build_unit_count_tier_plot
-
+from .unit_item_placement_plot import build_units_item_placement_plot
 
 class TFTDataAnalyser:
-    def __init__(self, db, region='na', units_df=None):
+    def __init__(self, db, DataBuilder, region='na', units_df=None):
         self.db = db
         self.units_df = units_df
+        self.DataBuilder = DataBuilder
 
     def units_count_tier_plot(self):
         """
@@ -59,52 +60,6 @@ class TFTDataAnalyser:
         tabs = Tabs(tabs=panels)
         save(tabs) 
 
-    # def winner_loser_units_plot(self, winner_units_df, loser_units_df):
-    #     """
-    #     Build units_plot for winner and loser group
-    #         tabs: 6 tabs, cost of champion
-    #         x_axis: champion name
-    #         y_axis: champion usage count
-    #         scatter: average tier of champion
-    #         vbar_color : average placement map
-    #     """
-    #     output_file(f"experiments/plot/unit_plot/win_lose_units_plot.html")
-    #     # Plot with all units
-    #     win_fig, lose_fig, background_image = build_winner_loser_unit_usage_plot(winner_units_df, loser_units_df, theme=all_unit_usage_plot_theme)
-        
-
-    #     # Winner plot  by cost of units
-    #     win_plots = []
-    #     win_plots += [Row(win_fig, background_image)]
-    #     win_units_df_by_cost = split_units_df_by_cost(set_name='set3', units_df=winner_units_df)
-        
-    #     for df_data in win_units_df_by_cost.values():
-    #         cost_unit_df = pd.DataFrame(df_data, columns = winner_units_df.columns)
-    #         fig, background_image = build_all_player_unit_usage_plot(cost_unit_df, theme=winner_loser_unit_usage_plot_theme) 
-    #         win_plots += [Row(fig, background_image)]
-
-    #     # Loser plot  by cost of units
-    #     lose_plots = []
-    #     lose_plots += [Row(lose_fig, background_image)]
-    #     lose_units_df_by_cost = split_units_df_by_cost(set_name='set3', units_df=loser_units_df)
-        
-    #     for df_data in lose_units_df_by_cost.values():
-    #         cost_unit_df = pd.DataFrame(df_data, columns = loser_units_df.columns)
-    #         fig, background_image = build_all_player_unit_usage_plot(cost_unit_df, theme=winner_loser_unit_usage_plot_theme) 
-    #         lose_plots += [Row(fig, background_image)]
-        
-    #     win_lose_tabs = []
-    #     for index in range(len(win_plots)):
-    #         if index == 0:
-    #             tab_title = 'All Champions'
-    #         else:
-    #             tab_title = f'{index} Cost Champions'
-    #         win_lose_tabs += [Panel(child=gridplot([[win_plots[index], lose_plots[index] ]]), title=tab_title)]
-
-    #     res = Tabs(tabs=win_lose_tabs)
-    #     save(res)
-
-
     def items_plot(self, items_df):
         """
         Build items_plot
@@ -119,19 +74,7 @@ class TFTDataAnalyser:
         save(Row(fig, background_image))
 
 
-
-    # def winner_loser_items_plot(self, winner_items_df, loser_items_df):
-    #     """
-    #     Build items_plot for winner and loser group
-    #         x_axis: item name
-    #         y_axis: item usage count
-    #         vbar_color : average placement map
-    #     """
-    #     output_file(f"experiments/plot/item_plot/winner_loser_items_plot.html")
-    #     # Plot with all units
-    #     winner_fig, loser_fig, background_image = build_winner_loser_item_usage_plot(winner_items_df, loser_items_df)
-    #     winner_plot = Row(winner_fig, background_image)
-    #     loser_plot = Row(loser_fig, background_image)
-        
-    #     res = gridplot([[winner_plot, loser_plot ]])
-    #     save(res)
+    def units_item_placement(self):
+        output_file(f'test_unit_item_placement.html')
+        fig = build_units_item_placement_plot(self.DataBuilder.units_item_placement_df, title='Champion Item & Placement', theme=unit_stacked_bar_theme)
+        save(fig)

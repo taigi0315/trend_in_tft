@@ -5,8 +5,8 @@ from collections import Counter
 import numpy as np
 import pandas as pd
 
-from .helper import split_match_data_win_lose
-from .items_df import update_item_hashtable, add_item_image_on_df, add_item_count_percent_on_df, find_item_name
+from .helper import split_match_data_win_lose, find_item_name
+from .items_df import update_item_hashtable, add_item_image_on_df, add_item_count_percent_on_df
 from .traits_df import build_traits_df
 from .units_df import (add_average_num_item_on_units_df,
                        add_average_tier_on_units_df, add_champion_image_on_df,
@@ -15,6 +15,41 @@ from .units_df import (add_average_num_item_on_units_df,
                        convert_traits, get_champion_cost,
                        get_units_in_multi_match)
 
+with open('assets/set3/items.json') as f:
+    ITEM_DATA = json.load(f)
+    ITEM_NAMES = [item['name'] for item in ITEM_DATA]
+    
+with open('assets/set3/champions.json') as f:
+    CHAMPION_DATA = json.load(f)
+    CHAMPION_IDS = [champ['championId'] for champ in CHAMPION_DATA]
+    CHAMPION_NAMES = [champ['name'] for champ in CHAMPION_DATA]
+    CHAMPION_COSTS = [champ['cost'] for champ in CHAMPION_DATA]
+
+with open('assets/set3/traits.json') as f:
+    TRAIT_DATA = json.load(f)
+    # Build traits names ex) Blaster_1, Blaster_2
+    TRAIT_NAMES = []
+    for trait in TRAIT_DATA:
+        for i in range(len(trait['sets'])):
+            trait_level = trait['key'] + '_' + str(i+1)
+            TRAIT_NAMES.append(trait_level)
+
+def calculate_average_tier(tier_1, tier_2, tier_3, count):
+    """
+    Calculate average tier for each row
+    Return .00 precision value
+    """
+    if count == 0:
+        return 0
+
+    sum_of_tier = 0
+    if tier_1 != 0:
+        sum_of_tier += len(tier_1)
+    if tier_2 != 0:
+        sum_of_tier += 2*len(tier_2)
+    if tier_3 != 0:
+        sum_of_tier += 2*len(tier_3)
+    return round(float(sum_of_tier / count), 2)
 
 class TFTDataBuilder:
     """
@@ -107,13 +142,10 @@ class TFTDataBuilder:
                 for unit in player['units']:
                         item_hashtable = update_item_hashtable(item_hashtable, unit['items'], player_placement)    
         
-        with open('assets/set3/items.json') as f:
-            item_id_name_list = json.load(f)
-        
-        
+
         items_df = pd.DataFrame(item_hashtable.values(), columns=['Id', 'Count', 'Sum_Placement', 'Placement_List'])
         items_df['Placements'] = items_df.apply(lambda row: dict(Counter(row.Placement_List)), axis=1)
-        items_df['Name'] = items_df.apply(lambda row: find_item_name(item_id_name_list, row.Id), axis=1)
+        items_df['Name'] = items_df.apply(lambda row: find_item_name(ITEM_ID_NAME_LIST, row.Id), axis=1)
         items_df['Average_Placement'] = items_df.apply(lambda row: (row.Sum_Placement / row.Count), axis=1)
         items_df = add_item_image_on_df(items_df)
         items_df = add_item_count_percent_on_df(items_df)
@@ -143,9 +175,11 @@ class TFTDataBuilder:
             champion_id_list.append(champ['championId'])
         # Get all item id to use as index
         item_id_list = []
+        item_name_list = []
         for item in set_items_info:
             item_id_list.append(item['id'])
-
+            item_name_list.append(item['name'])
+        
         units_item_placement_df = {}
         # Iterate through unit in all units in all matches
         for unit in unit_list:
@@ -157,12 +191,20 @@ class TFTDataBuilder:
                 # Create empty dataframe with size of placement * #item
                 empty_df = pd.DataFrame(index=list(range(1, 9)), columns=item_id_list)
                 empty_df = empty_df.fillna(0) # with 0s rather than NaNs
+                # Add item name row
+                empty_df.loc['Item_Name'] = item_name_list
                 units_item_placement_df[champ_id] = empty_df
             
             # Fill up the empty dataframe
             for i in unit['items']:
                 units_item_placement_df[champ_id].loc[placement][i] += 1
+            
+            # Add Average Placement row
+            units_item_placement_df[champ_id].loc['Average_Placement'] = units_item_placement_df[champ_id].sum(axis=0)
+
+            
         
+
         self.units_item_placement_df = units_item_placement_df
         
         if save:    
@@ -170,32 +212,81 @@ class TFTDataBuilder:
                 if not os.path.exists('experiments/dataframe/units/units_item_placement_dataframe'):
                     os.makedirs('experiments/dataframe/units/units_item_placement_dataframe')
                 
-                df = pd.DataFrame(table, index=list(range(1, 9)), columns=item_id_list)
+                df = pd.DataFrame(table, index=[list(range(1, 9)), 'Item_Name', 'Average_Placement'], columns=item_id_list)
                 df.to_csv(f'experiments/dataframe/units/units_item_placement_dataframe/{champ_id}_item_placement.csv')
 
-    
-    # def build_winner_loser_dataframe(self, save=False):
-    #     self.winner_match_data, self.loser_match_data = split_match_data_win_lose(self.match_data)
-    #     # Build unit_df for winner & loser
-    #     self.winner_units_df = build_units_df(self.winner_match_data)
-    #     self.loser_units_df = build_units_df(self.loser_match_data)
+#---------------------------------------------------------------------------------------Version 2
+
         
-    #     if save:
-    #         self.winner_units_df.to_csv(f'experiments/dataframe/win_and_lose/units/winner_units_df_{self.region}_{self.start_date}_{self.end_date}.csv')
-    #         self.loser_units_df.to_csv(f'experiments/dataframe/win_and_lose/units/loser_units_df_{self.region}_{self.start_date}_{self.end_date}.csv')
+    def build_champion_dataframe(self):
+        """
+        Champion Dataframe will be used to analyze relationship between 
+        "How the champion is used" and "Placement of the player"
+        """
+        df_columns = ['champion_name', 'champion_cost', 'image', 'count', 'all_placement']
+        # Add tiers to columns
+        df_columns += ['tier_1', 'tier_2', 'tier_3']
+        # Add items to columns
+        df_columns += ITEM_NAMES
+        #  Add traits to columns
+        df_columns += TRAIT_NAMES
+        # Create empty dataframe
+        champion_df = pd.DataFrame(index=CHAMPION_IDS, columns=df_columns)
+        champion_df = champion_df.fillna(0) # with 0s rather than NaNs
+        
+        
+        # %This trick is required to store list data in dataframe%
+        object_dtype_cols = ['all_placement', 'tier_1', 'tier_2', 'tier_3', ITEM_NAMES, TRAIT_NAMES]
+        for col in object_dtype_cols:
+            champion_df[col] = champion_df[col].astype(object)
 
-    #     # Build item_df for winner & loser
-    #     self.winner_items_df = build_items_df(self.winner_match_data)
-    #     self.loser_items_df = build_items_df(self.loser_match_data)
+        # Update champion name column
+        champion_df['champion_name'] = CHAMPION_NAMES
+        # Update champion cost column
+        champion_df['champion_cost'] = CHAMPION_COSTS
+        # Update champion image column
+        champion_df['image'] = champion_df.apply(lambda row: f"../../../assets/set3/champions/{str(row['champion_name']).lower()}.png", axis=1)
 
-    #     if save:
-    #         self.winner_items_df.to_csv(f'experiments/dataframe/win_and_lose/items/winner_items_df_{self.region}_{self.start_date}_{self.end_date}.csv')
-    #         self.loser_items_df.to_csv(f'experiments/dataframe/win_and_lose/items/loser_items_df_{self.region}_{self.start_date}_{self.end_date}.csv')
+        # Get all unit data from all player in all matches
+        units_in_matches = get_units_in_multi_match(self.match_data)
+        for unit in units_in_matches:
+            # unit data
+            placement = unit['placement']
+            items = [find_item_name(item) for item in unit['items']]
 
-    #     # Build trait_df for winner & loser
-    #     self.winner_traits_df = build_traits_df(self.winner_match_data)
-    #     self.loser_traits_df = build_traits_df(self.loser_match_data)
+            # Update champion-count
+            champion_df.at[unit['character_id'], 'count'] += 1
+            # Update champin-placement
+            if champion_df.at[unit['character_id'], 'all_placement'] == 0:
+                champion_df.at[unit['character_id'], 'all_placement'] = [placement]
+            else:
+                # champion_df.at[unit['character_id'], 'all_placement'] =[champion_df.at[unit['character_id'], 'all_placement'], unit['placement']]
+                champion_df.at[unit['character_id'], 'all_placement'].append(placement)
+            # Update champion-tier
+            tier_column = 'tier_' + str(unit['tier'])
+            if champion_df.at[unit['character_id'], tier_column] == 0:
+                champion_df.at[unit['character_id'], tier_column] = [placement]
+            else:
+                champion_df.at[unit['character_id'], tier_column].append(placement)
+            # Update champion-trait data
+            for trait in unit['traits']:
+                if champion_df.at[unit['character_id'], trait] == 0:
+                    champion_df.at[unit['character_id'], trait] = [placement]
+                else:
+                    champion_df.at[unit['character_id'], trait].append(placement)
+            # Update champion-item data
+            for item in items:
+                if champion_df.at[unit['character_id'], item] == 0:
+                    champion_df.at[unit['character_id'], item] = [placement]
+                else:
+                    champion_df.at[unit['character_id'], item].append(placement)
+        # Calculate champion-count_percent
+        champion_df['count_percent'] = champion_df.apply(lambda row: round(float(row['count'] / len(units_in_matches) * 100), 2), axis=1)
+        # Calculate champion-average_placement      
+        champion_df['average_placement'] = champion_df.apply(lambda row: 0 if row['all_placement'] == 0 else round(float(sum(row['all_placement']) / len(row['all_placement'])), 2), axis=1)
+        # Calculate champion-average_tier
+        champion_df['average_tier'] = champion_df.apply(lambda row: calculate_average_tier(row['tier_1'], row['tier_2'], row['tier_3'], row['count']), axis=1)
+        
+        champion_df.to_csv('TEST_champion_df.csv')
+             
 
-    #     if save:
-    #         self.winner_traits_df.to_csv(f'experiments/dataframe/win_and_lose/traits/winner_traits_df_{self.region}_{self.start_date}_{self.end_date}.csv')
-    #         self.loser_traits_df.to_csv(f'experiments/dataframe/win_and_lose/traits/loser_traits_df_{self.region}_{self.start_date}_{self.end_date}.csv')

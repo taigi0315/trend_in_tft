@@ -10,11 +10,12 @@ with open('assets/set3/champions.json') as f:
 
 def get_units_in_single_match(single_match_data):
     """
-    Extract all unit data from single match data
+    Extract all unit data from single match data, and
+    enrich each unit data with players placement and traits
     Arguments: 
         single_match_data(Dict): response from Riot API match details
     Returns:
-        units(List): All units used in match
+        units(List): All units used in the match
     """
     
     players = single_match_data['match']['info']['participants']
@@ -30,7 +31,11 @@ def get_units_in_single_match(single_match_data):
         # Enrich each unit data with traits
         # This will be used to calculate most used trait for the unit
         for unit in player_units:
-            unit['traits'] = p['traits']
+            unit['traits'] = []
+            for trait in p['traits']:
+                if trait['tier_current'] > 0:
+                    trait_level = trait['name'] + '_' + str(trait['tier_current'])
+                    unit['traits'].append(trait_level)
 
         units += player_units
 
@@ -231,3 +236,6 @@ def build_unit_item_hashtable(list_of_unit):
         item_data['Average_Placement'] = item_data['Sum_Placement']/item_data['Count']
     
     return item_hash
+
+
+
