@@ -50,13 +50,13 @@ if __name__ == "__main__":
     # # DataBuilder.build_items_dataframe(save=True)
     # DataBuilder.build_units_item_placement_dataframe(save=True) 
 
-    # TFTDataAnalyser = TFTDataAnalyser(
-    #     db=db,
-    #     units_df=DataBuilder.units_df,
-    #     DataBuilder = DataBuilder
-    # )
+    TFTDataAnalyser = TFTDataAnalyser(
+        DataBuilder = DataBuilder
+    )
     # # TFTDataAnalyser.units_count_tier_plot()
-    # # TFTDataAnalyser.units_count_placement_plot()
+    TFTDataAnalyser.champion_count_placement(DataBuilder.champion_count_placement_df)
+    TFTDataAnalyser.champion_count_tier(DataBuilder.champion_count_tier_df)
+    TFTDataAnalyser.champion_item_placement(DataBuilder.champion_item_placement_df)
     # # # ALl Items
     # # TFTDataAnalyser.items_plot(items_df = DataBuilder.items_df)
     # TFTDataAnalyser.units_item_placement()

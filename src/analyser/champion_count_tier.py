@@ -26,19 +26,19 @@ def hover_tool():
         hover.tooltips = """
         <div style="background-color:rgba(0,0,0,0.1);">
                 <div style="border-radius: 1px; background-color:rgba(0,0,0,0.1);">
-                        <img src=@Image alt="" width="125" height="125">
+                        <img src=@image alt="" width="125" height="125">
                 </div>
-                <div style="text-align:center; font-size:16px;"><strong>@Name</strong></div>
-                <div><strong>Count: @Count (@Count_Pct%)</strong></div>
-                <div><strong>Avg_Tier: @Average_Tier</strong></div>
-                <div><strong>Avg_Placement: @Average_Placement</strong></div>
-                <div><strong>Avg_Item: @Average_Item</strong></div>
+                <div style="text-align:center; font-size:16px;"><strong>@champion_name</strong></div>
+                <div><strong>Count: @count (@count_percen%)</strong></div>
+                <div><strong>Avg_Tier: @average_tier</strong></div>
+                <div><strong>Avg_Placement: @average_placement</strong></div>
+                <div><strong>Avg_#_Item: @average_number_item</strong></div>
         </div>
         """
 
         return hover
 
-def build_unit_count_tier_plot(units_df, title=None, theme=None):
+def build_plot(champion_count_tier_df, title=None, theme=None):
         """
         Build units_count_tier_plot for winner and loser group
             tabs: 6 tabs, cost of champion
@@ -46,29 +46,11 @@ def build_unit_count_tier_plot(units_df, title=None, theme=None):
             y_axis: champion usage count in stack of placement
             scatter: average placement of champion
         """
-        units_df  = units_df.sort_values(by=['Cost', 'Count'])
-        Plot_Data = {
-                "1": [],
-                "2": [],
-                "3": []
-        }
-        for tiers in units_df['Tier']:
-                for tier, count in tiers.items():
-                        Plot_Data[str(tier)].append(count)
-        
-        Plot_Data['Image'] = units_df['Image']
-        Plot_Data['Name'] = units_df['Name']
-        Plot_Data['Average_Placement'] = units_df['Average_Placement']
-        Plot_Data['Average_Tier'] = units_df['Average_Tier']
-        Plot_Data['Average_Item'] = units_df['Average_#_Item']
-        Plot_Data['Count'] = units_df['Count']
-        Plot_Data['Count_Pct'] = units_df['Count(%)']
-       
-        source = ColumnDataSource(data=Plot_Data)
+        source = ColumnDataSource(data=champion_count_tier_df)
               
         fig = figure(
-                x_range=units_df['Name'].tolist(),
-                y_range=(0, max(units_df['Count'])+int(max(units_df['Count'])*0.1)),
+                x_range=champion_count_tier_df['champion_name'].tolist(),
+                y_range=(0, max(champion_count_tier_df['count'])+int(max(champion_count_tier_df['count'])*0.1)),
                 toolbar_location=None,
                 tools="",
         )
@@ -79,37 +61,16 @@ def build_unit_count_tier_plot(units_df, title=None, theme=None):
         if title:
                 fig.title.text = title
 
-        # Adding second axis for Scatter Plot(Champion_Name | Average_Tier)
-        fig.add_layout(
-                LinearAxis(
-                        y_range_name="Average_Tier",
-                        ticker=[0, 1, 2, 3]
-                ), "right"
-        )
-        # labels = LabelSet(
-        #         x='Champion_Name',
-        #         y='Count',
-        #         text='Count',
-        #         level='glyph',
-        #         x_offset=-13.5,
-        #         y_offset=0,
-        #         source=source,
-        #         render_mode='canvas',
-        #         text_color = '#F7E64B'
-        # )
-        # fig.add_layout(labels)
-
-        y_stack_names = ["1", "2", "3"]
+        y_stack_names = ["tier_1", "tier_2", "tier_3"]
         fig.vbar_stack(
             y_stack_names,
-            x='Name',
-            width=0.65,
+            x='champion_name',
+            width=0.52,
             color=unit_tier_stacked_bar_color_palette,
-            alpha=0.65,
+            alpha=0.64,
             source=source,
             legend_label=y_stack_names
         )
-
         fig.legend.location = 'top_left'
         fig.legend.background_fill_color = "#1C1A10"
         fig.legend.background_fill_alpha = 0.3
@@ -121,14 +82,21 @@ def build_unit_count_tier_plot(units_df, title=None, theme=None):
         fig.legend.title_text_color = '#F7E64B'
         fig.legend.label_text_color = '#F7E64B'
         fig.legend.title_text_font_size = '12px'
+
         
-        
+        # Adding second axis for Scatter Plot(champion_name | average_tier)
+        fig.add_layout(
+                LinearAxis(
+                        y_range_name="Average_Tier_Axis",
+                        ticker=[0, 1, 2, 3]
+                ), "right")
         # Add second y-axis for average tier
-        fig.extra_y_ranges = {"Average_Tier": Range1d(start=0, end=3)}
+        fig.extra_y_ranges = {"Average_Tier_Axis": Range1d(start=0, end=3)}
+        
         fig.hex(
-                x="Name",
-                y="Average_Tier",
-                y_range_name="Average_Tier", 
+                x="champion_name",
+                y="average_tier",
+                y_range_name="Average_Tier_Axis", 
                 color="#F7E64B",
                 size=17,
                 line_color='#F7E64B',
@@ -159,7 +127,7 @@ def build_unit_count_tier_plot(units_df, title=None, theme=None):
         logo_image_width = plot_width*0.2
         logo_image_height = plot_height*0.2
         background_image = Div(
-            text = f'<div style="position: relative; left:{-(1.65*plot_width)}px; top:{plot_height*0.025}px; z-index:100;">\
+            text = f'<div style="position: relative; left:{-(1.0*plot_width)}px; top:{plot_height*0.025}px; z-index:100;">\
             <img src={logo_image_path} style="width:{logo_image_width}; height:{logo_image_height}px; opacity: 0.70">\
             </div>')
 

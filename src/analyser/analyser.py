@@ -4,20 +4,17 @@ from bokeh.layouts import gridplot
 from bokeh.models import Row
 from bokeh.models.widgets import Panel, Tabs
 
-from .helper import split_units_df_by_cost
+from . import champion_count_placement, champion_count_tier,champion_item_placement
+from .helper import split_df_by_champion_cost
 from .item_count_placement_plot import build_item_count_placement_plot
 from .theme import unit_stacked_bar_theme
-from .unit_count_placement_plot import build_unit_count_placement_plot
-from .unit_count_tier_plot import build_unit_count_tier_plot
-from .unit_item_placement_plot import build_units_item_placement_plot
+
 
 class TFTDataAnalyser:
-    def __init__(self, db, DataBuilder, region='na', units_df=None):
-        self.db = db
-        self.units_df = units_df
+    def __init__(self, DataBuilder, region='na'):
         self.DataBuilder = DataBuilder
 
-    def units_count_tier_plot(self):
+    def champion_count_tier(self, champion_count_tier_df):
         """
         Build units_count_tier_plot for winner and loser group
             tabs: 6 tabs, cost of champion
@@ -27,39 +24,47 @@ class TFTDataAnalyser:
         """
         output_file(f"experiments/plot/unit_plot/units_count_tier_plot.html")
 
+        champion_count_tier_df  = champion_count_tier_df.sort_values(by=['count'])
+
         # Plot with all units
         panels = []
-        fig, background_image = build_unit_count_tier_plot(self.units_df, theme=unit_stacked_bar_theme) 
+        fig, background_image = champion_count_tier.build_plot(champion_count_tier_df, theme=unit_stacked_bar_theme) 
         panels += [Panel(child=Row(fig, background_image), title='All Champions')]
         
         # Plot by cost of units
-        units_df_by_cost = split_units_df_by_cost(set_name='set3', units_df=self.units_df)
+        units_df_by_cost = split_df_by_champion_cost(set_name='set3', df=champion_count_tier_df)
         for index, df_data in enumerate(units_df_by_cost.values()):
-            cost_unit_df = pd.DataFrame(df_data, columns = self.units_df.columns)
-            fig, background_image = build_unit_count_tier_plot(cost_unit_df, theme=unit_stacked_bar_theme) 
+            cost_unit_df = pd.DataFrame(df_data, columns = champion_count_tier_df.columns)
+            fig, background_image = champion_count_tier.build_plot(cost_unit_df, theme=unit_stacked_bar_theme) 
             panels += [Panel(child=Row(fig, background_image), title=f'{index+1} Cost Champions')]
 
         tabs = Tabs(tabs=panels)
         save(tabs)
 
-    def units_count_placement_plot(self):
+    def champion_count_placement(self, champion_count_placement_df):
         output_file(f"experiments/plot/unit_plot/unit_count_placement_plot.html")
-        
+        # Sort dataframe by cost
+        champion_count_placement_df = champion_count_placement_df.sort_values(by=['count'])
+
         # Plot with all units
         panels = []
-        fig, background_image = build_unit_count_placement_plot(self.units_df, theme=unit_stacked_bar_theme) 
+        fig, background_image = champion_count_placement.build_plot(champion_count_placement_df, theme=unit_stacked_bar_theme) 
         panels += [Panel(child=Row(fig, background_image), title='All Champions')]
         
         # Plot by cost of units
-        units_df_by_cost = split_units_df_by_cost(set_name='set3', units_df=self.units_df)
+        units_df_by_cost = split_df_by_champion_cost(set_name='set3', df=champion_count_placement_df)
         for index, df_data in enumerate(units_df_by_cost.values()):
-            cost_unit_df = pd.DataFrame(df_data, columns = self.units_df.columns)
-            fig, background_image = build_unit_count_placement_plot(cost_unit_df, theme=unit_stacked_bar_theme) 
+            cost_unit_df = pd.DataFrame(df_data, columns = champion_count_placement_df.columns)
+            fig, background_image = champion_count_placement.build_plot(cost_unit_df, theme=unit_stacked_bar_theme) 
             panels += [Panel(child=Row(fig, background_image), title=f'{index+1} Cost Champions')]
 
         tabs = Tabs(tabs=panels)
         save(tabs) 
 
+
+    def champion_item_placement(self, champion_item_placement_df):
+        champion_item_placement.build_plot(champion_item_placement_df)
+        
     def items_plot(self, items_df):
         """
         Build items_plot

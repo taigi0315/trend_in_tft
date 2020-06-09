@@ -1,7 +1,10 @@
 import math
 import json
 
-
+with open('assets/set3/items.json') as f:
+    ITEM_DATA = json.load(f)
+    ITEM_NAMES = [item['name'] for item in ITEM_DATA]
+    
 with open('assets/set3/items.json') as f:
     ITEM_ID_NAME_LIST = json.load(f)
 
@@ -12,7 +15,7 @@ def get_count_axis_ticker(max_count):
     return list(range(0, max_num+interval, interval))
 
 
-def split_units_df_by_cost(set_name, units_df):
+def split_df_by_champion_cost(set_name, df):
     """
     Based on champions_info, split unit_df by cos.
     Arguments:
@@ -27,7 +30,7 @@ def split_units_df_by_cost(set_name, units_df):
     with open(set_file_path) as f:
         champions_info = json.load(f)
 
-    units_df_by_cost = {
+    df_by_champion_cost = {
         "cost_1_champions": [],
         "cost_2_champions": [],
         "cost_3_champions": [],
@@ -35,12 +38,12 @@ def split_units_df_by_cost(set_name, units_df):
         "cost_5_champions": [],
     }
     
-    for index, row in units_df.iterrows():
-        champ_cost = next(champ['cost'] for champ in champions_info if champ['championId'] == row['Id'])
+    for index, row in df.iterrows():
+        champ_cost = next(champ['cost'] for champ in champions_info if champ['championId'] == index)
         hash_key = f"cost_{champ_cost}_champions"
-        units_df_by_cost[hash_key].append(dict(row))
+        df_by_champion_cost[hash_key].append(dict(row))
         
-    return units_df_by_cost
+    return df_by_champion_cost
 
 
 def find_item_name(item_id):

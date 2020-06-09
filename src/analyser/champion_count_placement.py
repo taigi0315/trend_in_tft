@@ -25,59 +25,33 @@ def hover_tool():
         hover.tooltips = """
         <div style="background-color:rgba(0,0,0,0.1);">
                 <div style="border-radius: 1px; background-color:rgba(0,0,0,0.1);">
-                        <img src=@Image alt="" width="125" height="125">
+                        <img src=@image alt="" width="125" height="125">
                 </div>
-                <div style="text-align:center; font-size:16px;"><strong>@Name</strong></div>
-                <div><strong>Count: @Count (@Count_Pct%)</strong></div>
-                <div><strong>Avg_Tier: @Average_Tier</strong></div>
-                <div><strong>Avg_Placement: @Average_Placement</strong></div>
-                <div><strong>Avg_Item: @Average_Item</strong></div>
+                <div style="text-align:center; font-size:16px;"><strong>@champion_name</strong></div>
+                <div><strong>Count: @count (@count_percent%)</strong></div>
+                <div><strong>Avg_Tier: @average_tier</strong></div>
+                <div><strong>Avg_Placement: @average_placement</strong></div>
+                <div><strong>Avg_#_Item: @average_number_item</strong></div>
         </div>
         """
 
         return hover
 
 
-def build_unit_count_placement_plot(units_df, title=None, theme=None):
+def build_plot(champion_count_placement_df, title=None, theme=None):
         """
         Build a figure of unit usage plot
         Arguments:
-                units_df(DataFrame): result from TFTDataBuilder.build_units_dataframe
-                columns : ['Id', 'Name', 'Count', 'Tier', 'Traits',
-                        'Item', 'Average_#_Item', 'Placement_List', 'Average_Placement',
-                        'Average_Tier', 'Count(%)', 'Image']) 
+                champion_count_placement_df(DataFrame)
         Returns:
                 fig(Figure)
                 background_image: logo image file
-        """       
-        units_df  = units_df.sort_values(by=['Cost', 'Count'])
-        Plot_Data = {
-            "1": [],
-            "2": [],
-            "3": [],
-            "4": [],
-            "5": [],
-            "6": [],
-            "7": [],
-            "8": []
-        }
-        for placements in units_df['Placement']:
-            for placement, count in placements.items():
-                Plot_Data[str(placement)].append(count)
-        
-        Plot_Data['Image'] = units_df['Image']
-        Plot_Data['Name'] = units_df['Name']
-        Plot_Data['Average_Placement'] = units_df['Average_Placement']
-        Plot_Data['Average_Tier'] = units_df['Average_Tier']
-        Plot_Data['Average_Item'] = units_df['Average_#_Item']
-        Plot_Data['Count'] = units_df['Count']
-        Plot_Data['Count_Pct'] = units_df['Count(%)']
-
-        source = ColumnDataSource(data=Plot_Data)
+        """
+        source = ColumnDataSource(data=champion_count_placement_df)
               
         fig = figure(
-                x_range=units_df['Name'].tolist(),
-                y_range=(0, max(units_df['Count'])+int(max(units_df['Count'])*0.05)),
+                x_range=champion_count_placement_df['champion_name'].tolist(),
+                y_range=(0, max(champion_count_placement_df['count'])+int(max(champion_count_placement_df['count'])*0.1)),
                 toolbar_location=None,
                 tools="",
         )
@@ -88,18 +62,10 @@ def build_unit_count_placement_plot(units_df, title=None, theme=None):
         if title:
                 fig.title.text = title
 
-        # Adding second axis for Scatter Plot(Champion_Name | Average_Tier)
-        fig.add_layout(
-                LinearAxis(
-                        y_range_name="Average_Placement",
-                        ticker=[1, 2, 3, 4, 5, 6, 7, 8]
-                ), "right"
-        )
-
         y_stack_names = ["1", "2", "3", "4", "5", "6", "7", "8"]
         fig.vbar_stack(
             y_stack_names,
-            x='Name',
+            x='champion_name',
             width=0.52,
             color=unit_stacked_bar_color_palette,
             alpha=0.64,
@@ -118,12 +84,20 @@ def build_unit_count_placement_plot(units_df, title=None, theme=None):
         fig.legend.label_text_color = '#F7E64B'
         fig.legend.title_text_font_size = '12px'
 
-        # Add second y-axis for average placement
-        fig.extra_y_ranges = {"Average_Placement": Range1d(start=1, end=8)}
+        # Adding second axis for Scatter Plot(Champion_Name | Average_Tier)
+        fig.add_layout(
+                LinearAxis(
+                        y_range_name="Average_Placement_Axis",
+                        ticker=[1, 2, 3, 4, 5, 6, 7, 8]
+                ), "right"
+        )
+        # Set extra axis range
+        fig.extra_y_ranges = {"Average_Placement_Axis": Range1d(start=1, end=8)}
+        # Add scatter of average placement of champion on the plot
         fig.hex(
-                x="Name",
-                y="Average_Placement",
-                y_range_name="Average_Placement", 
+                x="champion_name",
+                y="average_placement",
+                y_range_name="Average_Placement_Axis", 
                 color="#F7E64B",
                 size=17,
                 line_color='#F7E64B',
@@ -133,7 +107,7 @@ def build_unit_count_placement_plot(units_df, title=None, theme=None):
                 source=source
         )
 
-        # Add hover tool div
+        # # Add hover tool div
         fig.add_tools(hover_tool())
 
         # Axis design setting
@@ -151,10 +125,10 @@ def build_unit_count_placement_plot(units_df, title=None, theme=None):
         logo_image_path = "../../../assets/image/tft_logo.png"
         plot_width = fig.plot_width
         plot_height= fig.plot_height
-        logo_image_width = plot_width*0.15
-        logo_image_height = plot_height*0.15
+        logo_image_width = plot_width*0.2
+        logo_image_height = plot_height*0.2
         background_image = Div(
-            text = f'<div style="position: relative; left:{-(1.65*plot_width)}px; top:{plot_height*0.05}px; z-index:100;">\
+            text = f'<div style="position: relative; left:{-(1*plot_width)}px; top:{plot_height*0.025}px; z-index:100;">\
             <img src={logo_image_path} style="width:{logo_image_width}; height:{logo_image_height}px; opacity: 0.70">\
             </div>')
 

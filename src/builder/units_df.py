@@ -4,6 +4,8 @@ import numpy as np
 from collections import Counter
 import json
 
+from .helper import ITEM_NAMES
+
 CHAMPIONS = None
 with open('assets/set3/champions.json') as f:
         CHAMPIONS  = json.load(f)
@@ -238,4 +240,78 @@ def build_unit_item_hashtable(list_of_unit):
     return item_hash
 
 
+#--------------------------------version 2-----------------------------------------------
 
+def build_champion_count_placement_df(champion_df):
+    """
+    Build dataframe for champion_count_placement plot
+    """
+    # Copy general_info columns from champion_df
+    col_names = ['champion_name', 'champion_cost', 'image', 'count', 'count_percent', 'average_placement', 'average_tier']
+    champion_count_placement_df = champion_df.loc[:, col_names].copy()
+    # build zeros-df with index of champion_id and column of 'placement'
+    placement_col_names = ['1', '2', '3', '4', '5', '6', '7', '8']
+    empty_placement_df = pd.DataFrame(index=champion_df.index, columns=placement_col_names)
+    empty_placement_df = empty_placement_df.fillna(0)
+    # join those two
+    champion_count_placement_df =  pd.concat([champion_count_placement_df, empty_placement_df], axis=1)
+    # iterate through dataframe to update each placement
+    for idx, champ_row in champion_df.iterrows():
+        # Skip the case champion is not used
+        if champ_row['all_placement'] == 0:
+            pass
+        else:
+            for place in champ_row['all_placement']:
+                champion_count_placement_df.loc[idx, str(place)] += 1
+                
+    return champion_count_placement_df    
+
+    
+def build_champion_count_tier_df(champion_df):
+    """
+    Build dataframe for champion_count_tier plot
+    """
+    # Copy general_info columns from champion_df
+    col_names = ['champion_name', 'champion_cost', 'image', 'count', 'count_percent', 'average_placement', 'average_tier']
+    champion_count_tier_df = champion_df.loc[:, col_names].copy()
+    # build zeros-df with index of champion_id and column of 'tier_level'
+    tier_col_names = ['tier_1', 'tier_2', 'tier_3']
+    empty_tier_df = pd.DataFrame(index=champion_df.index, columns=tier_col_names)
+    empty_tier_df = empty_tier_df.fillna(0)
+    # join those two
+    champion_count_tier_df =  pd.concat([champion_count_tier_df, empty_tier_df], axis=1)
+
+    # iterate through dataframe to update each tier
+    for idx, champ_row in champion_df.iterrows():
+        # Skip the case champion is not used
+        for t in tier_col_names:
+            if champ_row[t] == 0:
+                pass
+            else:
+                champion_count_tier_df.loc[idx, t] = len(champion_df.loc[idx, t])
+                
+    return champion_count_tier_df    
+
+
+def build_champion_item_placement_df(champion_df):
+    champion_item_placement_df = {}
+    index = champion_df.index.values
+    placement_list = ['1', '2', '3', '4', '5', '6', '7', '8']
+    # Iterate through each champion (row of champion_df)
+    for idx in index:
+        # Create empty dataframe for each champion  row:placement col:items
+        one_champ_item_placement_df = pd.DataFrame(index=placement_list, columns=ITEM_NAMES)
+        one_champ_item_placement_df = one_champ_item_placement_df.fillna(0) # with 0s rather than NaNs
+        
+        champ_item_row = champion_df.loc[idx, ITEM_NAMES]
+        for item_name in ITEM_NAMES:
+            item_placement = champ_item_row[item_name]
+            # Skip if item is not used
+            if item_placement != 0:
+                for p in item_placement:
+                    one_champ_item_placement_df.loc[str(p), item_name] += 1
+        # Build dictionary key=champion_id, value=champion_item_placement_df
+        champion_item_placement_df[idx] = one_champ_item_placement_df
+
+    
+    return champion_item_placement_df
