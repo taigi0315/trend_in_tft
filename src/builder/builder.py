@@ -68,75 +68,10 @@ class TFTDataBuilder:
     """
     Builder class creates and stores DataFrame
     """
-    def __init__(self, start_date, end_date, region='na1', match_data=None):
-        self.region=region
+    def __init__(self, file_name_prefix, match_data, save=True):
+        self.file_name_prefix = file_name_prefix
+        self.save = save
         self.match_data = match_data
-        self.start_date = start_date
-        self.end_date = end_date
-    
-
-    def build_units_dataframe(self, save=False):
-        '''
-        Build a dataframe for unit useage analysis
-        Arguments:
-            match_data(List): list of match data(Dict)
-        Returns:
-            unit_df(dataFrame): |Name(String)|Id(String)|Count(Int)|tiers(List)|items(List)|Traits(Dict)|Average_Placement(Float)|Average_Tier(Float)|Average_#_Item(Float)|Count(%)(Float)|
-        
-        sample single unit data :
-        '''
-
-        units_list = get_units_in_multi_match(self.match_data)
-        units_hash = build_unit_hashtable(units_list)
-        
-        units_df_data = []
-        for champ_name, list_of_unit in units_hash.items():
-            tiers_list = []
-            traits_list = []
-            placement_list = []
-            
-            for unit in list_of_unit:
-                # Champion tier
-                tiers_list.append(unit['tier'])
-                # Placements with the champ
-                placement_list.append(unit['placement'])
-                # Traits used with the champ
-                traits_list += convert_traits(unit['traits'])
-
-            item_hash = build_unit_item_hashtable(list_of_unit)
-
-            champ_tiers = dict(Counter(tiers_list))
-            champ_traits = dict(Counter(traits_list))
-            champ_placements = dict(Counter(placement_list))
-            
-            # Fill up missing cases ex) no specific placement with the unit
-            for p in range(1, 9):
-                if p not in champ_placements.keys():
-                    champ_placements[p] = 0
-            # Fill up missing cases ex) no specific tier with the unit
-            for p in range(1, 4):
-                if p not in champ_tiers.keys():
-                    champ_tiers[p] = 0
-                
-            average_placement = sum(placement_list) / len(list_of_unit)
-            champ_items = item_hash
-            units_df_data.append([champ_name, len(list_of_unit), champ_tiers, champ_traits, champ_items, champ_placements, average_placement])
-        
-        
-        units_df = pd.DataFrame(units_df_data, columns = ['Id', 'Count', 'Tier', 'Traits', 'Item', 'Placement', 'Average_Placement']) 
-        units_df = add_average_tier_on_units_df(units_df)
-        units_df = add_average_num_item_on_units_df(units_df)
-        units_df = add_unit_count_percent_on_df(units_df)
-        units_df = convert_champion_id_to_name(units_df)
-        units_df = add_champion_image_on_df(units_df)
-        units_df['Cost'] = units_df.apply(lambda row: get_champion_cost(row.Id), axis=1)
-
-        self.units_df = units_df
-        
-        if save:
-            self.units_df.to_csv(f'experiments/dataframe/units/units_df_{self.region}_{self.start_date}_{self.end_date}.csv')
-
-        
 
     def build_items_dataframe(self, save=False):
         """
@@ -167,69 +102,8 @@ class TFTDataBuilder:
         
         if save:
             self.items_df.to_csv(f'experiments/dataframe/items/items_df_{self.region}_{self.start_date}_{self.end_date}.csv')
-        
-        
-    
-    def build_units_item_placement_dataframe(self, save=False):       
-        unit_list = get_units_in_multi_match(self.match_data)
-        set_name = 'set3'
-
-        set_champion_file_path = f'assets/{set_name}/champions.json'
-        with open(set_champion_file_path) as f:
-            set_champions_info = json.load(f)
-
-        set_item_file_path = f'assets/{set_name}/items.json'
-        with open(set_item_file_path) as f:
-            set_items_info = json.load(f)
-
-        # Get all champion id to use as index
-        champion_id_list = []
-        for champ in set_champions_info:
-            champion_id_list.append(champ['championId'])
-        # Get all item id to use as index
-        item_id_list = []
-        item_name_list = []
-        for item in set_items_info:
-            item_id_list.append(item['id'])
-            item_name_list.append(item['name'])
-        
-        units_item_placement_df = {}
-        # Iterate through unit in all units in all matches
-        for unit in unit_list:
-            champ_id = unit['character_id']
-            placement = unit['placement']
-            
-            # Create empty dict if champion is not in yet
-            if champ_id not in units_item_placement_df.keys():
-                # Create empty dataframe with size of placement * #item
-                empty_df = pd.DataFrame(index=list(range(1, 9)), columns=item_id_list)
-                empty_df = empty_df.fillna(0) # with 0s rather than NaNs
-                # Add item name row
-                empty_df.loc['Item_Name'] = item_name_list
-                units_item_placement_df[champ_id] = empty_df
-            
-            # Fill up the empty dataframe
-            for i in unit['items']:
-                units_item_placement_df[champ_id].loc[placement][i] += 1
-            
-            # Add Average Placement row
-            units_item_placement_df[champ_id].loc['Average_Placement'] = units_item_placement_df[champ_id].sum(axis=0)
-
-            
-        
-
-        self.units_item_placement_df = units_item_placement_df
-        
-        if save:    
-            for champ_id, table in units_item_placement_df.items():
-                if not os.path.exists('experiments/dataframe/units/units_item_placement_dataframe'):
-                    os.makedirs('experiments/dataframe/units/units_item_placement_dataframe')
-                
-                df = pd.DataFrame(table, index=[list(range(1, 9)), 'Item_Name', 'Average_Placement'], columns=item_id_list)
-                df.to_csv(f'experiments/dataframe/units/units_item_placement_dataframe/{champ_id}_item_placement.csv')
 
 #---------------------------------------------------------------------------------------Version 2
-
         
     def build_champion_dataframe(self):
         """
@@ -258,7 +132,7 @@ class TFTDataBuilder:
         # Update champion cost column
         champion_df['champion_cost'] = CHAMPION_COSTS
         # Update champion image column
-        champion_df['image'] = champion_df.apply(lambda row: f"../../../assets/set3/champions/{str(row['champion_name']).lower()}.png", axis=1)
+        champion_df['image'] = champion_df.apply(lambda row: f"../../../assets/TFT_set_data/set3/champions/{str(row['champion_name']).lower()}.png", axis=1)
 
         # Get all unit data from all player in all matches
         units_in_matches = get_units_in_multi_match(self.match_data)
@@ -305,6 +179,10 @@ class TFTDataBuilder:
         self.champion_df = champion_df
         self.champion_count_placement_df = build_champion_count_placement_df(champion_df)
         self.champion_count_tier_df = build_champion_count_tier_df(champion_df)
-        self.champion_item_placement_df = build_champion_item_placement_df(champion_df)
         
-        champion_df.to_csv('TEST_champion_df.csv')
+        build_champion_item_placement_df(champion_df, save=self.save, file_name_prefix=self.file_name_prefix)
+        
+        if self.save:
+            champion_df.to_csv(f"assets/data/{self.file_name_prefix}/champion_df.csv")
+            self.champion_count_placement_df.to_csv(f"assets/data/{self.file_name_prefix}/champion_count_placement_df.csv")
+            self.champion_count_tier_df.to_csv(f"assets/data/{self.file_name_prefix}/champion_count_tier_df.csv")

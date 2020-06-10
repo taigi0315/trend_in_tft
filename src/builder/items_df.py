@@ -21,7 +21,7 @@ def add_item_image_on_df(items_df):
     Add image file path to df
     """
 
-    items_df['Image'] = items_df.apply(lambda row: f"../../../assets/set3/items/{str(row.Id).zfill(2)}.png", axis=1)
+    items_df['Image'] = items_df.apply(lambda row: f"../../../assets/TFT_set_data/set3/items/{str(row.Id).zfill(2)}.png", axis=1)
     return items_df
 
 

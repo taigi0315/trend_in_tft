@@ -52,7 +52,8 @@ def build_plot(champion_count_tier_df, title=None, theme=None):
                 x_range=champion_count_tier_df['champion_name'].tolist(),
                 y_range=(0, max(champion_count_tier_df['count'])+int(max(champion_count_tier_df['count'])*0.1)),
                 toolbar_location=None,
-                tools="",
+                tools="undo, box_zoom, reset",
+                toolbar_location="right"
         )
 
         # Set Theme
@@ -121,7 +122,7 @@ def build_plot(champion_count_tier_df, title=None, theme=None):
         fig.ygrid.grid_line_alpha = 0.2
         
         # Adding background image to plot
-        logo_image_path = "../../../assets/image/tft_logo.png"
+        logo_image_path = "../../../statics/tft_logo.png"
         plot_width = fig.plot_width
         plot_height= fig.plot_height
         logo_image_width = plot_width*0.2

@@ -144,7 +144,7 @@ def build_item_count_placement_plot(items_df, title=None, theme=None):
         fig.ygrid.grid_line_alpha = 0.2
         
         # Adding background image to plot
-        logo_image_path = "../../../assets/image/tft_logo.png"
+        logo_image_path = "../../../statics/tft_logo.png"
         plot_width = fig.plot_width
         plot_height= fig.plot_height
         logo_image_width = plot_width*0.15

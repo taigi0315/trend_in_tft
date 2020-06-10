@@ -1,0 +1,55 @@
+item_name,1,2,3,4,5,6,7,8,id,count,count_percent,image,average_placement
+B.F. Sword,0,0,0,0,1,1,0,0,1,2,0.17,../../../assets/TFT_set_data/set3/items/01.png,5.5
+Recurve Bow,0,1,0,1,0,0,2,0,2,4,0.33,../../../assets/TFT_set_data/set3/items/02.png,5.0
+Needlessly Large Rod,0,1,1,0,0,2,0,0,3,4,0.33,../../../assets/TFT_set_data/set3/items/03.png,4.25
+Tear of the Goddess,0,0,1,4,2,1,0,1,4,9,0.74,../../../assets/TFT_set_data/set3/items/04.png,4.78
+Chain Vest,0,0,1,4,3,2,4,6,5,20,1.65,../../../assets/TFT_set_data/set3/items/05.png,6.1
+Negatron Cloak,0,1,1,3,2,1,5,3,6,16,1.32,../../../assets/TFT_set_data/set3/items/06.png,5.75
+Giant's Belt,2,4,2,2,3,2,1,3,7,19,1.57,../../../assets/TFT_set_data/set3/items/07.png,4.32
+Spatula,0,0,0,0,1,0,1,0,8,2,0.17,../../../assets/TFT_set_data/set3/items/08.png,6.0
+Sparring Gloves,0,0,1,0,3,3,1,0,9,8,0.66,../../../assets/TFT_set_data/set3/items/09.png,5.38
+Deathblade,0,0,0,1,0,1,1,1,11,4,0.33,../../../assets/TFT_set_data/set3/items/11.png,6.25
+Giant Slayer,0,0,0,1,0,0,1,0,12,2,0.17,../../../assets/TFT_set_data/set3/items/12.png,5.5
+Hextech Gunblade,1,0,1,1,2,0,2,1,13,8,0.66,../../../assets/TFT_set_data/set3/items/13.png,5.0
+Spear of Shojin,0,0,1,0,2,0,0,0,14,3,0.25,../../../assets/TFT_set_data/set3/items/14.png,4.33
+Guardian Angel,5,9,5,8,4,8,2,4,15,45,3.72,../../../assets/TFT_set_data/set3/items/15.png,4.09
+Bloodthirster,0,0,0,1,1,0,1,0,16,3,0.25,../../../assets/TFT_set_data/set3/items/16.png,5.33
+Zeke's Herald,0,0,1,0,0,1,1,0,17,3,0.25,../../../assets/TFT_set_data/set3/items/17.png,5.33
+Blade of the Ruined King,0,0,0,1,0,1,0,0,18,2,0.17,../../../assets/TFT_set_data/set3/items/18.png,5.0
+Infinity Edge,0,0,0,0,0,1,0,0,19,1,0.08,../../../assets/TFT_set_data/set3/items/19.png,6.0
+Rapid Firecannon,0,0,1,0,0,1,0,0,22,2,0.17,../../../assets/TFT_set_data/set3/items/22.png,4.5
+Guinsoo's Rageblade,1,0,1,0,1,0,0,0,23,3,0.25,../../../assets/TFT_set_data/set3/items/23.png,3.0
+Statikk Shiv,2,1,0,1,2,0,0,0,24,6,0.5,../../../assets/TFT_set_data/set3/items/24.png,3.0
+Titan's Resolve,2,7,8,3,2,4,3,2,25,31,2.56,../../../assets/TFT_set_data/set3/items/25.png,3.97
+Runaan's Hurricane,0,0,0,1,1,0,0,0,26,2,0.17,../../../assets/TFT_set_data/set3/items/26.png,4.5
+Zz'Rot Portal,11,11,7,3,5,4,8,4,27,53,4.38,../../../assets/TFT_set_data/set3/items/27.png,3.83
+Infiltrator's Talons,1,0,0,1,0,0,0,0,28,2,0.17,../../../assets/TFT_set_data/set3/items/28.png,2.5
+Last Whisper,1,1,0,0,0,0,0,0,29,2,0.17,../../../assets/TFT_set_data/set3/items/29.png,1.5
+Rabadon's Deathcap,0,1,0,0,0,1,0,0,33,2,0.17,../../../assets/TFT_set_data/set3/items/33.png,4.0
+Luden's Echo,2,0,1,0,1,1,0,1,34,6,0.5,../../../assets/TFT_set_data/set3/items/34.png,4.0
+Locket of the Iron Solari,6,7,4,5,5,2,1,2,35,32,2.65,../../../assets/TFT_set_data/set3/items/35.png,3.5
+Ionic Spark,14,27,30,26,21,22,15,12,36,167,13.81,../../../assets/TFT_set_data/set3/items/36.png,4.19
+Morellonomicon,8,9,8,8,5,5,11,2,37,56,4.63,../../../assets/TFT_set_data/set3/items/37.png,4.11
+Demolitionist's Charge,0,0,0,0,0,1,2,0,38,3,0.25,../../../assets/TFT_set_data/set3/items/38.png,6.67
+Jeweled Gauntlet,1,1,0,1,1,1,2,0,39,7,0.58,../../../assets/TFT_set_data/set3/items/39.png,4.57
+Seraph's Embrace,1,1,0,1,0,1,0,0,44,4,0.33,../../../assets/TFT_set_data/set3/items/44.png,3.25
+Frozen Heart,20,27,31,23,24,18,20,14,45,177,14.64,../../../assets/TFT_set_data/set3/items/45.png,4.18
+Chalice of Favor,0,1,0,0,0,0,0,0,46,1,0.08,../../../assets/TFT_set_data/set3/items/46.png,2.0
+Redemption,23,15,20,10,14,11,13,10,47,116,9.59,../../../assets/TFT_set_data/set3/items/47.png,3.97
+Star Guardian's Charm,0,0,0,0,0,1,0,0,48,1,0.08,../../../assets/TFT_set_data/set3/items/48.png,6.0
+Hand Of Justice,0,2,0,0,1,2,1,0,49,6,0.5,../../../assets/TFT_set_data/set3/items/49.png,4.67
+Bramble Vest,10,8,12,8,14,8,9,3,55,72,5.96,../../../assets/TFT_set_data/set3/items/55.png,4.15
+Sword Breaker,0,1,0,0,1,1,0,0,56,3,0.25,../../../assets/TFT_set_data/set3/items/56.png,4.33
+Red Buff,0,1,2,1,0,0,1,3,57,8,0.66,../../../assets/TFT_set_data/set3/items/57.png,5.38
+Rebel Medal,0,2,1,0,0,2,0,0,58,5,0.41,../../../assets/TFT_set_data/set3/items/58.png,3.8
+Shroud of Stillness,7,10,7,4,0,7,5,2,59,42,3.47,../../../assets/TFT_set_data/set3/items/59.png,3.74
+Dragon's Claw,10,7,7,5,4,8,2,3,66,46,3.8,../../../assets/TFT_set_data/set3/items/66.png,3.72
+Zephyr,8,11,9,7,5,3,3,0,67,46,3.8,../../../assets/TFT_set_data/set3/items/67.png,3.24
+Celestial Orb,5,3,11,4,3,4,3,2,68,35,2.89,../../../assets/TFT_set_data/set3/items/68.png,3.89
+Quicksilver,1,2,0,0,2,2,0,1,69,8,0.66,../../../assets/TFT_set_data/set3/items/69.png,4.38
+Warmog's Armor,5,6,5,2,4,5,3,3,77,33,2.73,../../../assets/TFT_set_data/set3/items/77.png,4.09
+Protector's Chestguard,0,1,0,1,1,0,0,0,78,3,0.25,../../../assets/TFT_set_data/set3/items/78.png,3.67
+Trap Claw,3,3,3,2,2,2,3,0,79,18,1.49,../../../assets/TFT_set_data/set3/items/79.png,3.83
+Force of Nature,3,1,0,0,0,0,0,1,88,5,0.41,../../../assets/TFT_set_data/set3/items/88.png,2.6
+Dark Star's Heart,2,1,1,3,0,1,0,0,89,8,0.66,../../../assets/TFT_set_data/set3/items/89.png,3.12
+Thief's Gloves,7,6,2,7,5,5,8,3,99,43,3.56,../../../assets/TFT_set_data/set3/items/99.png,4.37

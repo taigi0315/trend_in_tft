@@ -11,8 +11,9 @@ from .theme import unit_stacked_bar_theme
 
 
 class TFTDataAnalyser:
-    def __init__(self, DataBuilder, region='na'):
+    def __init__(self, DataBuilder, file_name_prefix=None):
         self.DataBuilder = DataBuilder
+        self.file_name_prefix = file_name_prefix
 
     def champion_count_tier(self, champion_count_tier_df):
         """
@@ -22,7 +23,7 @@ class TFTDataAnalyser:
             y_axis: champion usage count in stack of tier
             scatter: average tier of champion
         """
-        output_file(f"experiments/plot/unit_plot/units_count_tier_plot.html")
+        output_file(f"assets/plot/{self.file_name_prefix}/units_count_tier_plot.html")
 
         champion_count_tier_df  = champion_count_tier_df.sort_values(by=['count'])
 
@@ -42,7 +43,7 @@ class TFTDataAnalyser:
         save(tabs)
 
     def champion_count_placement(self, champion_count_placement_df):
-        output_file(f"experiments/plot/unit_plot/unit_count_placement_plot.html")
+        output_file(f"assets/plot/{self.file_name_prefix}/unit_count_placement_plot.html")
         # Sort dataframe by cost
         champion_count_placement_df = champion_count_placement_df.sort_values(by=['count'])
 
@@ -62,24 +63,25 @@ class TFTDataAnalyser:
         save(tabs) 
 
 
-    def champion_item_placement(self, champion_item_placement_df):
-        champion_item_placement.build_plot(champion_item_placement_df)
-        
-    def items_plot(self, items_df):
-        """
-        Build items_plot
-            x_axis: item name
-            y_axis: item usage count
-            vbar_color : average placement map
-        """
-        output_file(f"experiments/plot/item_plot/item_count_placement_plot.html")
-
-        fig, background_image = build_item_count_placement_plot(items_df)
-        
+    def champion_item_placement(self):
+        output_file(f"assets/plot/{self.file_name_prefix}/champ_item_placement_plot.html")
+        fig, background_image = champion_item_placement.build_plot(file_name_prefix = self.file_name_prefix)
         save(Row(fig, background_image))
+    # def items_plot(self, items_df):
+    #     """
+    #     Build items_plot
+    #         x_axis: item name
+    #         y_axis: item usage count
+    #         vbar_color : average placement map
+    #     """
+    #     output_file(f"experiments/plot/item_plot/item_count_placement_plot.html")
+
+    #     fig, background_image = build_item_count_placement_plot(items_df)
+        
+    #     save(Row(fig, background_image))
 
 
-    def units_item_placement(self):
-        output_file(f'test_unit_item_placement.html')
-        fig = build_units_item_placement_plot(self.DataBuilder.units_item_placement_df, title='Champion Item & Placement', theme=unit_stacked_bar_theme)
-        save(fig)
+    # def units_item_placement(self):
+    #     output_file(f'test_unit_item_placement.html')
+    #     fig = build_units_item_placement_plot(self.DataBuilder.units_item_placement_df, title='Champion Item & Placement', theme=unit_stacked_bar_theme)
+    #     save(fig)

@@ -4,10 +4,10 @@ import numpy as np
 from collections import Counter
 import json
 
-from .helper import ITEM_NAMES
+from .helper import ITEM_NAMES, ITEM_IDS, calculate_average_placement
 
 CHAMPIONS = None
-with open('assets/set3/champions.json') as f:
+with open('assets/TFT_set_data/set3/champions.json') as f:
         CHAMPIONS  = json.load(f)
 
 def get_units_in_single_match(single_match_data):
@@ -172,7 +172,7 @@ def add_champion_image_on_df(units_df):
     Add image file path to df
     """
     
-    units_df['Image'] = units_df.apply(lambda row: f"../../../assets/set3/champions/{str(row.Name).lower()}.png", axis=1)
+    units_df['Image'] = units_df.apply(lambda row: f"../../../assets/TFT_set_data/set3/champions/{str(row.Name).lower()}.png", axis=1)
     return units_df
 
 
@@ -293,25 +293,39 @@ def build_champion_count_tier_df(champion_df):
     return champion_count_tier_df    
 
 
-def build_champion_item_placement_df(champion_df):
-    champion_item_placement_df = {}
-    index = champion_df.index.values
-    placement_list = ['1', '2', '3', '4', '5', '6', '7', '8']
-    # Iterate through each champion (row of champion_df)
-    for idx in index:
+def build_champion_item_placement_df(champion_df, save=True, file_name_prefix=None):
+    """
+    Build item_placement dataframe for each champion
+    """
+    column_names= ['1', '2', '3', '4', '5', '6', '7', '8']
+    
+    champion_ids = champion_df.index.values
+
+    for champ in champion_ids:
         # Create empty dataframe for each champion  row:placement col:items
-        one_champ_item_placement_df = pd.DataFrame(index=placement_list, columns=ITEM_NAMES)
+        one_champ_item_placement_df = pd.DataFrame(index=ITEM_NAMES, columns=column_names)
         one_champ_item_placement_df = one_champ_item_placement_df.fillna(0) # with 0s rather than NaNs
-        
-        champ_item_row = champion_df.loc[idx, ITEM_NAMES]
+        # Iterate through champion rows
+        champ_items = champion_df.loc[champ, ITEM_NAMES]
+        # Iterate through item colums
+        total_item_count = 0
+        total_item_placement = 0
         for item_name in ITEM_NAMES:
-            item_placement = champ_item_row[item_name]
+            item_placement = champ_items[item_name]
             # Skip if item is not used
             if item_placement != 0:
                 for p in item_placement:
-                    one_champ_item_placement_df.loc[str(p), item_name] += 1
-        # Build dictionary key=champion_id, value=champion_item_placement_df
-        champion_item_placement_df[idx] = one_champ_item_placement_df
+                    one_champ_item_placement_df.loc[item_name, str(p)] += 1
+                    total_item_count += 1
+                    total_item_placement += p
 
-    
-    return champion_item_placement_df
+        one_champ_item_placement_df['id'] = ITEM_IDS
+        one_champ_item_placement_df['count'] = one_champ_item_placement_df.apply(lambda row: row['1']+row['2']+row['3']+row['4']+row['5']+row['6']+row['7']+row['8'], axis=1)
+        one_champ_item_placement_df['count_percent'] = one_champ_item_placement_df.apply(lambda row: round(float(row['count'] / total_item_count * 100), 2) if row['count'] != 0 else 0, axis=1)
+        one_champ_item_placement_df['image'] = one_champ_item_placement_df.apply(lambda row: f"../../../assets/TFT_set_data/set3/items/{str(int(row['id'])).zfill(2)}.png", axis=1)
+        one_champ_item_placement_df['average_placement'] = one_champ_item_placement_df.apply(lambda row: calculate_average_placement(row), axis=1)
+        
+        if save:
+            # Store dataframe as csv file with champion name in file name
+            file_path = f"assets/data/{file_name_prefix}/champion_item_placement/{champ}_item_placement.csv"
+            one_champ_item_placement_df.to_csv(file_path, index_label='item_name')

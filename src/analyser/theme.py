@@ -1,11 +1,11 @@
 from bokeh.themes.theme import Theme
 
-unit_stacked_bar_color_palette = ["#F53315","#F86B32","#F4A564","#F0D5A8","#6EAA9F","#038996","#036C8E","#011E50"]
-unit_tier_stacked_bar_color_palette = ["#036C8E","#F4A564","#F53315"]
+unit_stacked_bar_color_palette = ["#F53315", "#F86B32", "#F4A564", "#F0D5A8", "#6EAA9F", "#038996", "#036C8E", "#011E50"]
+unit_tier_stacked_bar_color_palette = ["#036C8E", "#F4A564", "#F53315"]
 unit_stacked_bar_theme = Theme(
     json={
-        "attrs" : {
-            "Figure" : {
+        "attrs": {
+            "Figure": {
                 "background_fill_color": "#1C1A10",
                 "background_fill_alpha": 0.85,
                 "plot_height": 950,
@@ -29,5 +29,5 @@ unit_stacked_bar_theme = Theme(
                 "text_font_style": "italic"
             }
         }
-    }   
+    }
 )

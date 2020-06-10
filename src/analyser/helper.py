@@ -1,11 +1,12 @@
 import math
 import json
 
-with open('assets/set3/items.json') as f:
+with open('assets/TFT_set_data/set3/items.json') as f:
     ITEM_DATA = json.load(f)
     ITEM_NAMES = [item['name'] for item in ITEM_DATA]
-    
-with open('assets/set3/items.json') as f:
+    ITEM_IDS = [item['id'] for item in ITEM_DATA]
+
+with open('assets/TFT_set_data/set3/items.json') as f:
     ITEM_ID_NAME_LIST = json.load(f)
 
 
@@ -26,7 +27,7 @@ def split_df_by_champion_cost(set_name, df):
         unit_df_by_cost(Dict): hashed unit_df by cost of unit
     """
 
-    set_file_path = f'assets/{set_name}/champions.json'
+    set_file_path = f'assets/TFT_set_data/{set_name}/champions.json'
     with open(set_file_path) as f:
         champions_info = json.load(f)
 
@@ -50,3 +51,5 @@ def find_item_name(item_id):
      for item in ITEM_ID_NAME_LIST:
             if str(item['id']) == str(item_id):
                 return item['name']
+
+

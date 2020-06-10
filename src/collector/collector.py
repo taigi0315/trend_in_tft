@@ -1,7 +1,3 @@
-import datetime
-import json
-import time
-
 import pymongo
 import requests
 from pymongo import MongoClient
@@ -18,12 +14,12 @@ class TFTMatchDataCollector:
             db: MongoDB connection
         """
         # token needs to be updated daily
-        self.token = "RGAPI-a0ce4945-fe9e-4940-aff0-540561890304"
+        self.token = "RGAPI-8ed8ceda-fe5f-4f68-8017-4be73af5e386"
         self.header = {
             'X-Riot-Token': self.token
         }
         self.db = db
-        
+
         # Pull existing match ids
         self.match_ids_in_db = self.db.collection.find().distinct('_id')
         # Init requests set up
@@ -31,7 +27,7 @@ class TFTMatchDataCollector:
 
     def setup_requests(self):
         self.http = requests.Session()
-        
+
         assert_status_hook = lambda response, *args, **kwargs: response.raise_for_status()
         self.http.hooks["response"] = [assert_status_hook]
         
@@ -53,9 +49,9 @@ class TFTMatchDataCollector:
         summoner_names = []
         for summoner in res.json()['entries']:
             summoner_names.append(summoner['summonerName'])
-        
+
         return summoner_names
-    
+
     def get_puu_id(self, summoner_name, region='na1'):
         """
         Get an puuid of id, puuid is required to get match data
@@ -86,28 +82,32 @@ class TFTMatchDataCollector:
                 print(f'Getting {index}th puu_id...')
 
             puu_ids.append(self.get_puu_id(name, region))
-        
+
         return puu_ids
-    
+
     def get_user_match_ids(self, puu_id, region='na1', count=20):
         url = f'https://{region}.api.riotgames.com//tft/match/v1/matches/by-puuid/{puu_id}/ids?count={count}'
         res = self.http.get(url, headers=self.header)
-    
+
         return res.json()
-    
+
     def get_match_data(self, match_id, region='americas'):
         url = f'https://americas.api.riotgames.com/tft/match/v1/matches/{match_id}'
-        res = self.http.get(url, headers=self.header)
+        try:
+            res = self.http.get(url, headers=self.header)
+            return res.json()
+        except:
+            print(f"Request Failed  match_id:{match_id}")
+            pass
         
-        return res.json()
-    
+
     def get_n_matches(self, region='na1', tier='challenger', count=20):
         """
         Get list of match ids with provided conditions
         """
         print(f'Getting summners names\n region:{region} tier: {tier}')
         summoner_names = self.get_summoner_names(tier, region)
-        
+
         print(f'Getting puu_ids for #{len(summoner_names)} summoners')
         puu_ids = self.get_puu_ids(summoner_names, region)
 
@@ -116,15 +116,18 @@ class TFTMatchDataCollector:
         for id in puu_ids:
             # TODO - will need to handle region change (na1 -> america)
             match_ids += self.get_user_match_ids(puu_id=id, region='americas', count=count)
-        
+
         # Delete duplicated match ids
         match_ids = list(set(match_ids))
-        
+
         # Delete match ids existing in DB
+        duplicated_match_id = [i for i in match_ids if i in self.match_ids_in_db]
+        if len(duplicated_match_id) > 0:
+            print(f"Duplicated Match Ids: {len(duplicated_match_id)}")
         match_ids_to_pull = [i for i in match_ids if i not in self.match_ids_in_db]
-        
+
         print(f'Found {len(match_ids_to_pull)} match ids to request')
-        
+
         print("Start requesting match data")
         for index, id in enumerate(match_ids_to_pull):
             # TODO - Region handling
@@ -133,15 +136,16 @@ class TFTMatchDataCollector:
             match_data = self.get_match_data(match_id=id)
             try:
                 self.db.collection.insert_one({
-                    "_id":match_data['metadata']['match_id'],
-                    "region":region,
-                    "tier":tier,
+                    "_id": match_data['metadata']['match_id'],
+                    "region": region,
+                    "tier": tier,
                     "match": match_data
                 })
             except:
                 print(f"Exception Storing Data to DB")
-            
+
         print('Data Pulling Done')
+
 
 if __name__ == "__main__":
     db_client = MongoClient('localhost', 27017)
