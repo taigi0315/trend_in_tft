@@ -2,7 +2,7 @@ import time
 from datetime import date
 import os
 from pymongo import MongoClient
-
+from bokeh.io import curdoc
 from analyser.analyser import TFTDataAnalyser
 from builder.builder import TFTDataBuilder
 
@@ -56,21 +56,17 @@ if __name__ == "__main__":
         save=data_save_flag
     )
     DataBuilder.build_champion_dataframe()
-
-    # DataBuilder.build_units_dataframe(save=True)
-    # DataBuilder.build_items_dataframe(save=True)
-    # DataBuilder.build_units_item_placement_dataframe(save=True)
-
 #------------------Analyser---------------------------
 
     TFTDataAnalyser = TFTDataAnalyser(
         DataBuilder = DataBuilder,
         file_name_prefix=file_name_prefix
     )
-    # TFTDataAnalyser.units_count_tier_plot()
+
     TFTDataAnalyser.champion_count_placement(DataBuilder.champion_count_placement_df)
     TFTDataAnalyser.champion_count_tier(DataBuilder.champion_count_tier_df)
     TFTDataAnalyser.champion_item_placement()
+
     # ALl Items
     # TFTDataAnalyser.items_plot(items_df = DataBuilder.items_df)
     # TFTDataAnalyser.units_item_placement()

@@ -6,9 +6,11 @@ with open('assets/TFT_set_data/set3/items.json') as f:
     ITEM_NAMES = [item['name'] for item in ITEM_DATA]
     ITEM_IDS = [item['id'] for item in ITEM_DATA]
 
-with open('assets/TFT_set_data/set3/items.json') as f:
-    ITEM_ID_NAME_LIST = json.load(f)
-
+with open('assets/TFT_set_data/set3/champions.json') as f:
+    CHAMPION_DATA = json.load(f)
+    CHAMPION_IDS = [champ['championId'] for champ in CHAMPION_DATA]
+    CHAMPION_NAMES = [champ['name'].replace(" ", "").replace("'", "") for champ in CHAMPION_DATA]
+    CHAMPION_COSTS = [champ['cost'] for champ in CHAMPION_DATA]
 
 def get_count_axis_ticker(max_count):
     max_num = int(math.ceil(max_count / 50.0)) * 50

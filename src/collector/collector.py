@@ -14,7 +14,7 @@ class TFTMatchDataCollector:
             db: MongoDB connection
         """
         # token needs to be updated daily
-        self.token = "RGAPI-8ed8ceda-fe5f-4f68-8017-4be73af5e386"
+        self.token = token
         self.header = {
             'X-Riot-Token': self.token
         }
@@ -35,7 +35,7 @@ class TFTMatchDataCollector:
         self.http.mount("https://", TimeoutHTTPAdapter(max_retries=retries))
 
 
-    def get_summoner_names(self, tier='challenger', region='na1'):
+    def get_summoner_names(self, tier='challenger', region='na1', division='I'):
         """
         Get list of summoner names in the region
         Arguments:
@@ -43,11 +43,20 @@ class TFTMatchDataCollector:
         Returns: 
             summoner_names(List)
         """
-        url = f'https://{region}.api.riotgames.com/tft/league/v1/{tier}'
-        res = self.http.get(url, headers=self.header)
+        if tier in ['challenger', 'gandmaster', 'master']:
+            url = f'https://{region}.api.riotgames.com/tft/league/v1/{tier}'
+        else:
+            url = f'https://{region}.api.riotgames.com/tft/league/v1/entries/{tier.upper()}/{division}?page=1'
+        
 
+        res = self.http.get(url, headers=self.header)
+        if tier in ['challenger', 'gandmaster', 'master']:
+            res = res.json()['entries']
+        else:
+            res = res.json()
+        
         summoner_names = []
-        for summoner in res.json()['entries']:
+        for summoner in res:
             summoner_names.append(summoner['summonerName'])
 
         return summoner_names
@@ -150,10 +159,10 @@ class TFTMatchDataCollector:
 if __name__ == "__main__":
     db_client = MongoClient('localhost', 27017)
     db = db_client['match_data']
-    token = "RGAPI-dff47123-b41c-4acd-8ea4-f5a59598e2f6"
+    token = "RGAPI-57bd3f80-633a-477c-b75c-31a402c1e2c3"
     MatchDataCollector = TFTMatchDataCollector(db, token)
     MatchDataCollector.get_n_matches(
         region='na1',
-        tier='challenger',
+        tier='diamond',
         count=100
     )

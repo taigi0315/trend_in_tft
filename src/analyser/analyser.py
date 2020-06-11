@@ -1,6 +1,6 @@
 import pandas as pd
 from bokeh.io import output_file, save
-from bokeh.layouts import gridplot
+from bokeh.layouts import gridplot, column
 from bokeh.models import Row
 from bokeh.models.widgets import Panel, Tabs
 
@@ -65,8 +65,8 @@ class TFTDataAnalyser:
 
     def champion_item_placement(self):
         output_file(f"assets/plot/{self.file_name_prefix}/champ_item_placement_plot.html")
-        fig, background_image = champion_item_placement.build_plot(file_name_prefix = self.file_name_prefix)
-        save(Row(fig, background_image))
+        champion_item_placement.build_plot(file_name_prefix = self.file_name_prefix, theme=unit_stacked_bar_theme)
+        
     # def items_plot(self, items_df):
     #     """
     #     Build items_plot

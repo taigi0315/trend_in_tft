@@ -51,7 +51,6 @@ def build_plot(champion_count_tier_df, title=None, theme=None):
         fig = figure(
                 x_range=champion_count_tier_df['champion_name'].tolist(),
                 y_range=(0, max(champion_count_tier_df['count'])+int(max(champion_count_tier_df['count'])*0.1)),
-                toolbar_location=None,
                 tools="undo, box_zoom, reset",
                 toolbar_location="right"
         )

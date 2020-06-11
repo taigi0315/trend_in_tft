@@ -4,7 +4,7 @@ import numpy as np
 from collections import Counter
 import json
 
-from .helper import ITEM_NAMES, ITEM_IDS, calculate_average_placement
+from .helper import ITEM_NAMES, ITEM_IDS, calculate_average_placement, CHAMPION_NAMES
 
 CHAMPIONS = None
 with open('assets/TFT_set_data/set3/champions.json') as f:
@@ -301,7 +301,7 @@ def build_champion_item_placement_df(champion_df, save=True, file_name_prefix=No
     
     champion_ids = champion_df.index.values
 
-    for champ in champion_ids:
+    for idx, champ in enumerate(champion_ids):
         # Create empty dataframe for each champion  row:placement col:items
         one_champ_item_placement_df = pd.DataFrame(index=ITEM_NAMES, columns=column_names)
         one_champ_item_placement_df = one_champ_item_placement_df.fillna(0) # with 0s rather than NaNs
@@ -322,10 +322,10 @@ def build_champion_item_placement_df(champion_df, save=True, file_name_prefix=No
         one_champ_item_placement_df['id'] = ITEM_IDS
         one_champ_item_placement_df['count'] = one_champ_item_placement_df.apply(lambda row: row['1']+row['2']+row['3']+row['4']+row['5']+row['6']+row['7']+row['8'], axis=1)
         one_champ_item_placement_df['count_percent'] = one_champ_item_placement_df.apply(lambda row: round(float(row['count'] / total_item_count * 100), 2) if row['count'] != 0 else 0, axis=1)
-        one_champ_item_placement_df['image'] = one_champ_item_placement_df.apply(lambda row: f"../../../assets/TFT_set_data/set3/items/{str(int(row['id'])).zfill(2)}.png", axis=1)
+        one_champ_item_placement_df['image'] = one_champ_item_placement_df.apply(lambda row: f"../../../../assets/TFT_set_data/set3/items/{str(int(row['id'])).zfill(2)}.png", axis=1)
         one_champ_item_placement_df['average_placement'] = one_champ_item_placement_df.apply(lambda row: calculate_average_placement(row), axis=1)
         
         if save:
             # Store dataframe as csv file with champion name in file name
-            file_path = f"assets/data/{file_name_prefix}/champion_item_placement/{champ}_item_placement.csv"
+            file_path = f"assets/data/{file_name_prefix}/champion_item_placement/{CHAMPION_NAMES[idx]}_item_placement.csv"
             one_champ_item_placement_df.to_csv(file_path, index_label='item_name')
